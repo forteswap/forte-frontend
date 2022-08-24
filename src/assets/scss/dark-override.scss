@@ -1,0 +1,108 @@
+body.dark-mode {
+	background-image: url("../images/background-dark.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	
+	.balance-card {
+		background-color: #303133;
+		border-color: #303133;
+	}
+	
+	.balance-card-swapper {
+		.balance-card-swapper-parent {
+			background-color: #1E1E1E;
+			border-color: #3C4042;
+		}
+	}
+	
+	.text-primary {
+		font-weight: 400;
+		font-size: 16px;
+		line-height: 18px;
+		//color: var(--forte-primary-text-color) !important;
+	}
+	
+	.text-secondary {
+		font-weight: 400;
+		font-size: 14px;
+		color: var(--forte-secondary-text-color) !important;
+		line-height: 20px;
+	}
+	
+	.text-secondary-color {
+		color: var(--forte-secondary-text-color) !important;
+	}
+	
+	.form-check-input:focus {
+		border-color: transparent;
+		box-shadow: none;
+	}
+	
+	.form-switch .form-check-input {
+		&:focus {
+			background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%273%27 fill=%27rgba%280, 0, 0, 0.25%29%27/%3e%3c/svg%3e");
+		}
+		
+		&:checked {
+			background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%273%27 fill=%27%23fff%27/%3e%3c/svg%3e")
+		}
+	}
+	
+	.form-control:focus {
+		//color: #212529;
+		border-color: var(--forte-primary);
+		box-shadow: none;
+	}
+	
+	.modal-header {
+		border-bottom: 0;
+		
+		.btn-close:focus {
+			box-shadow: none;
+		}
+	}
+	
+	.modal-body {
+		padding: 1.5rem;
+	}
+	
+	.modal-body .text-secondary {
+		line-height: 20px;
+	}
+	
+	.modal-footer {
+		border-top: 0;
+	}
+	
+	.card-title {
+		//color: #A8A6A6;
+		font-weight: 700;
+		font-size: 24px;
+		line-height: 28px;
+	}
+	
+	.btn-check:focus + .btn, .btn:focus {
+		border-radius: 100px;
+		outline: 0;
+		box-shadow: none;
+	}
+	
+	.btn-forte-image {
+		background: #4C4E5A;
+		color: #DADADA;
+	}
+	
+	.price-info {
+		.title {
+			color: #E1E1E1;
+		}
+		
+		.sub-title {
+			color: #A8A6A6;
+		}
+	}
+	
+	p {
+		color: #BBBBBB;
+	}
+}

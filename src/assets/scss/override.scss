@@ -1,0 +1,93 @@
+body {
+	background-image: url("../images/background.png");
+	color: #5A5A5A;
+}
+
+body:not(.dark-mode) {
+	.btn:hover {
+		color: var(--forte-primary-text-color);
+		background-color: var(--forte-primary);
+		border-color: var(--forte-btn-hover-border-color);
+	}
+}
+
+.btn {
+	border-radius: 100px;
+	font-weight: 700;
+	font-size: 14px;
+	line-height: 16px;
+	padding-right: 1rem;
+	padding-left: 1rem;
+	
+	&.btn-forte-image {
+		font-size: var(--bs-btn-font-size);
+		font-weight: var(--bs-btn-font-weight);
+		line-height: var(--bs-btn-line-height);
+	}
+}
+
+.text-primary {
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 18px;
+	color: var(--forte-primary-text-color) !important;
+}
+
+.text-secondary {
+	font-weight: 400;
+	font-size: 14px;
+	color: var(--forte-secondary-text-color) !important;
+	line-height: 20px;
+}
+
+.text-secondary-color {
+	color: var(--forte-secondary-text-color) !important;
+}
+
+.form-check-input:focus {
+	border-color: transparent;
+	box-shadow: none;
+}
+
+.form-switch .form-check-input:focus {
+	background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%273%27 fill=%27rgba%280, 0, 0, 0.25%29%27/%3e%3c/svg%3e");
+}
+
+.form-control:focus {
+	color: #212529;
+	border-color: var(--forte-primary);
+	box-shadow: none;
+}
+
+.modal-header {
+	border-bottom: 0;
+	
+	.btn-close:focus {
+		box-shadow: none;
+	}
+}
+
+.modal-body {
+	padding: 1.5rem;
+}
+
+.modal-body .text-secondary {
+	line-height: 20px;
+}
+
+.modal-footer {
+	border-top: 0;
+}
+
+.card-title {
+	//color: #A8A6A6;
+	font-weight: 700;
+	font-size: 24px;
+	line-height: 28px;
+}
+
+.btn-check:focus + .btn, .btn:focus {
+	border-radius: 100px;
+	outline: 0;
+	box-shadow: none;
+}
