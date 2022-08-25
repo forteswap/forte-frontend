@@ -241,8 +241,6 @@ const Create = () => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
-        // const amountAMin = (99 * parseInt(formData.amountADesired)) / 100;
-        // const amountBMin = (99 * parseInt(formData.amountBDesired)) / 100;
         contract.connect(signer).addLiquidity(
             token1,
             token2,
