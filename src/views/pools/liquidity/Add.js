@@ -186,8 +186,8 @@ const Add = (props) => {
             token1,
             token2,
             currentPool.isStable,
-            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal)),
-            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal)),
+            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
+            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
             0,
             0,
             accounts[0],
@@ -213,12 +213,12 @@ const Add = (props) => {
             contract.connect(signer).addLiquidityCANTO(
                 token2,
                 currentPool.isStable,
-                ethers.utils.parseUnits(formData.amountBDesired.toString(), crypto2.decimal),
+                ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountADesired.toString(), crypto1.decimal)
+                    value: ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -233,12 +233,12 @@ const Add = (props) => {
             contract.connect(signer).addLiquidityCANTO(
                 token1,
                 currentPool.isStable,
-                ethers.utils.parseUnits(formData.amountADesired.toString(), crypto1.decimal),
+                ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountBDesired.toString(), crypto2.decimal)
+                value: ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)

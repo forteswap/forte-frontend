@@ -189,8 +189,8 @@ const Create = () => {
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
 
-        const parsedAmountADesired = ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal));
-        const parsedAmountBDesired = ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal));
+        const parsedAmountADesired = ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal);
+        const parsedAmountBDesired = ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal);
 
 
         if (crypto1.name === 'WCANTO') {
@@ -245,8 +245,8 @@ const Create = () => {
             token1,
             token2,
             isStable,
-            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal)),
-            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal)),
+            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
+            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
             0,
             0,
             accounts[0],
