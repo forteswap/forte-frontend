@@ -188,21 +188,22 @@ const Create = () => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
-        // const stable = crypto1.stable || crypto2.stable;
-        // const amountAMin = (99 * parseInt(formData.amountADesired)) / 100;
-        // const amountBMin = (99 * parseInt(formData.amountBDesired)) / 100;
+
+        const parsedAmountADesired = ethers.utils.parseUnits(crypto1.decimal == 6 ? Number(formData.amountADesired).toFixed(crypto1.decimal) : formData.amountADesired.toString(), crypto1.decimal);
+        const parsedAmountBDesired = ethers.utils.parseUnits(crypto2.decimal == 6 ? Number(formData.amountBDesired).toFixed(crypto2.decimal) : formData.amountBDesired.toString(), crypto2.decimal)
+
 
         if (crypto1.name === 'WCANTO') {
 
             contract.connect(signer).addLiquidityCANTO(
                 token2,
                 isStable,
-                ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal),
+                parsedAmountBDesired,
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal)
+                    value: parsedAmountADesired
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -217,12 +218,12 @@ const Create = () => {
             contract.connect(signer).addLiquidityCANTO(
                 token1,
                 isStable,
-                ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal),
+                parsedAmountADesired,
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal)
+                    value: parsedAmountBDesired
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -246,8 +247,8 @@ const Create = () => {
             token1,
             token2,
             isStable,
-            ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal),
-            ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal),
+            ethers.utils.parseUnits(crypto1.decimal == 6 ? Number(formData.amountADesired).toFixed(crypto1.decimal) : formData.amountADesired.toString(), crypto1.decimal),
+            ethers.utils.parseUnits(crypto2.decimal == 6 ? Number(formData.amountBDesired).toFixed(crypto2.decimal) : formData.amountBDesired.toString(), crypto2.decimal),
             0,
             0,
             accounts[0],
