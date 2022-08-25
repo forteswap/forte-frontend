@@ -24,7 +24,7 @@ export const cryptoCoinsEnum = {
         stable:false,
     },
     cinu: {
-        icon: "canto.svg",
+        icon: "cinu.png",
         title: "cINU",
         name: "cINU",
         address: "0x7264610A66EcA758A8ce95CF11Ff5741E1fd0455",
@@ -65,7 +65,7 @@ export const cryptoCoinsEnum = {
 
     },
     note: {
-        icon: "note.webp",
+        icon: "note.svg",
         title: "Note",
         name: "NOTE",
         address: "0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503",
