@@ -169,11 +169,11 @@ const Create = () => {
     }
 
     const setToken1Max =(val) =>{
-        setFormData(oldValues => ({...oldValues, ["amountADesired"]: val}));
+        setFormData(oldValues => ({...oldValues, ["amountADesired"]: val.toString()}));
     };
 
     const setToken2Max =(val) =>{
-        setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val}));
+        setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val.toString()}));
     };
 
     const handleCheckbox = (val) => {
