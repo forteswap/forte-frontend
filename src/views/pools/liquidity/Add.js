@@ -181,12 +181,13 @@ const Add = (props) => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
+        console.log(typeof amountADesired);
         contract.connect(signer).addLiquidity(
             token1,
             token2,
             currentPool.isStable,
-            ethers.utils.parseUnits(crypto1.decimal == 6 ? Number(formData.amountADesired).toFixed(crypto1.decimal) : formData.amountADesired.toString(), crypto1.decimal),
-            ethers.utils.parseUnits(crypto2.decimal == 6 ? Number(formData.amountBDesired).toFixed(crypto2.decimal) : formData.amountBDesired.toString(), crypto2.decimal),
+            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),
+            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),
             0,
             0,
             accounts[0],
