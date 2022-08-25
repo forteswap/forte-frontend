@@ -22,7 +22,7 @@ import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import CryptoListModal from "../../components/modal/CryptoList";
-import {getNumberValue, isTokenApproved} from "../../helper";
+import {getNumberValue, isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
 
 const {ethers} = require('ethers');
 const Create = () => {
@@ -116,7 +116,7 @@ const Create = () => {
 
                 if (BalanceOfToken1.toString() > 0) {
                     const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                    setToken1Balance(getNumberValue(BalanceOfToken1, decimalOfToken1));
+                    setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
                 } else {
                     setToken1Balance(0);
                 }
@@ -127,7 +127,7 @@ const Create = () => {
                 setIsToken2Approved(BalanceOfToken22);
                 if (BalanceOfToken2.toString() > 0) {
                     const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                    setToken2Balance(getNumberValue(BalanceOfToken2, decimalOfToken2));
+                    setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
                 }else {
                     setToken2Balance(0);
                 }
@@ -189,8 +189,8 @@ const Create = () => {
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
 
-        const parsedAmountADesired = ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal);
-        const parsedAmountBDesired = ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal);
+        const parsedAmountADesired = roundDownAndParse(formData.amountADesired,crypto1.decimal);
+        const parsedAmountBDesired = roundDownAndParse(formData.amountBDesired,crypto2.decimal);
 
 
         if (crypto1.name === 'WCANTO') {
@@ -245,8 +245,8 @@ const Create = () => {
             token1,
             token2,
             isStable,
-            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
-            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
+            roundDownAndParse(formData.amountADesired,crypto1.decimal),
+            roundDownAndParse(formData.amountBDesired,crypto2.decimal),
             0,
             0,
             accounts[0],

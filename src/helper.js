@@ -15,9 +15,9 @@ export function displayErrorMessage(message) {
     Snackbar.show({text: message, pos: 'top-center', backgroundColor : '#f910111f', actionTextColor: '#ea5455', duration: 6000});
 }
 
-export function getNumberValue(value,decimal= 18) {
+export function getNumberValue(value,decimal= 18,isWallet) {
     if(value !== 0){
-        return parseFloat((value.toString() / Math.pow(10,decimal)).toFixed(decimal))
+        return parseFloat((value.toString() / Math.pow(10,decimal)).toFixed(6))
     }
     return 0;
 }
@@ -48,6 +48,17 @@ export const getPoolData = async () => {
             store.dispatch(fetchPoolData(chunk))
         }
     })
+}
+
+export const roundDown = (number, decimals = 18) => {
+   const value =  (Number(number.toString()) / Math.pow(10, decimals))
+   return Math.floor( value * Math.pow(10, 6) ) / Math.pow(10, 6)
+}
+
+
+export const roundDownAndParse = (number, decimals = 18) => {
+    const roundValue = Math.floor( number * Math.pow(10, decimals) ) / Math.pow(10, decimals);
+    return ethers.utils.parseUnits(roundValue.toString(),decimals);
 }
 
 export const getTokenData = (token) => {

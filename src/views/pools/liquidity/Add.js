@@ -24,7 +24,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import {useParams} from "react-router";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config";
 import collect from "collect.js";
-import {getNumberValue, getTokenData, isTokenApproved} from "../../../helper";
+import {getNumberValue, getTokenData, isTokenApproved, roundDown, roundDownAndParse} from "../../../helper";
 import {connect} from "react-redux";
 
 const {ethers} = require('ethers');
@@ -131,13 +131,13 @@ const Add = (props) => {
             const poolAmountT2 = await erc20ContractToken2.balanceOf(currentPool.pairAddress);
             if (BalanceOfToken1.toString()) {
                 const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                setToken1Balance(getNumberValue(BalanceOfToken1, decimalOfToken1));
+                setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
                 setPoolAmountToken1(getNumberValue(poolAmountT1, decimalOfToken1));
             }
 
             if (BalanceOfToken2.toString()) {
                 const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                setToken2Balance(getNumberValue(BalanceOfToken2, decimalOfToken2));
+                setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
                 setPoolAmountToken2(getNumberValue(poolAmountT2, decimalOfToken2));
             }
         } catch (e) {
@@ -186,8 +186,8 @@ const Add = (props) => {
             token1,
             token2,
             currentPool.isStable,
-            ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
-            ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
+            ethers.utils.roundDownAndParse(formData.amountADesired,crypto1.decimal),
+            ethers.utils.roundDownAndParse(formData.amountBDesired,crypto2.decimal),
             0,
             0,
             accounts[0],
@@ -213,12 +213,12 @@ const Add = (props) => {
             contract.connect(signer).addLiquidityCANTO(
                 token2,
                 currentPool.isStable,
-                ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
+                roundDownAndParse(formData.amountBDesired,crypto2.decimal),
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
+                    value: roundDownAndParse(formData.amountADesired,crypto1.decimal),
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -233,12 +233,12 @@ const Add = (props) => {
             contract.connect(signer).addLiquidityCANTO(
                 token1,
                 currentPool.isStable,
-                ethers.utils.parseUnits(Number(formData.amountADesired).toFixed(crypto1.decimal),crypto1.decimal),
+                roundDownAndParse(formData.amountADesired,crypto1.decimal),
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                value: ethers.utils.parseUnits(Number(formData.amountBDesired).toFixed(crypto2.decimal),crypto2.decimal),
+                value: roundDownAndParse(formData.amountBDesired,crypto2.decimal),
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
