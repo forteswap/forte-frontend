@@ -17,7 +17,7 @@ export function displayErrorMessage(message) {
 
 export function getNumberValue(value,decimal= 18) {
     if(value !== 0){
-        return parseFloat((value.toString() / Math.pow(10,decimal)).toFixed(6))
+        return parseFloat((value.toString() / Math.pow(10,decimal)).toFixed(decimal))
     }
     return 0;
 }
