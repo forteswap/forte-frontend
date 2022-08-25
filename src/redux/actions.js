@@ -55,6 +55,7 @@ export const fetchPoolData = (pairs) => {
                 const poolAmountToken2 = await erc20ContractToken2.balanceOf(LpAddress);
                 const walletAmountToken2 = await erc20ContractToken2.balanceOf(accounts[0]);
                 const decimal2 = (token2 === undefined) ? 18 : token2.decimal;
+                console.log('test');
                 userWalletBalance[poolTokens[1]] = getNumberValue(walletAmountToken2,decimal2);
                 userPoolAmount[poolTokens[1]] = getNumberValue(share * poolAmountToken2,decimal2);
                 totalPoolAmount[poolTokens[1]] = getNumberValue(poolAmountToken2,decimal2);
