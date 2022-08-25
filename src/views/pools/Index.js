@@ -93,7 +93,7 @@ function Index(props) {
                                 className="align-middle me-1" alt="add"/>
                             <span className="align-middle">Add</span>
                         </Link>
-                    {parseFloat(pair.myPool.token1) > 0 && parseFloat(pair.myPool.token2) > 0 ?
+                    {parseFloat(pair.userLpBalance) > 0 ?
                         <Link className="btn btn-forte btn-danger" to={'/pool/remove-liquidity/' + pair.slug}>
                             <img
                                 src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")}

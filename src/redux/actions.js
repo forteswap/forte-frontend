@@ -64,6 +64,7 @@ export const fetchPoolData = (pairs) => {
                     token1Name: tokenNames[0].toLowerCase(),
                     token2Name: tokenNames[1].toLowerCase(),
                     pairAddress: LpAddress,
+                    lpTotalSupplyF: Number(LpTotalSupplyFinal),
                     slug: (isStable ? 'stable' : 'volatile') + '-' + tokenNames[0].toLowerCase() + '-' + tokenNames[1].toLowerCase(),
                     address: {
                         token1: poolTokens[0],

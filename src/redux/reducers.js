@@ -4,8 +4,9 @@ const data = (state = [] , action) => {
 
     switch(action.type) {
         case 'FETCH_POOL_DATA':
-            const collection = collect(state.concat(action.payload.data));
-            const unique = collection.unique('pairAddress');
+            const newState = state.concat(action.payload.data);
+            const collection = collect(newState).reverse();
+            const unique = collection.unique('pairAddress').sortByDesc('lpTotalSupplyF');
             return unique.all();
         default:
             return state

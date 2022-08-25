@@ -1,4 +1,4 @@
-import {CONTRACT_ADDRESS, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config";
+import {CHUNK_SIZE, CONTRACT_ADDRESS, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config";
 import {cryptoCoinsEnum} from "./staticData";
 import {ethers} from "ethers";
 import {batch} from "react-redux";
@@ -35,17 +35,13 @@ export async function isTokenApproved(contract, owner, spender = CONTRACT_ADDRES
     return getNumberValue(checkAllowance,18) > 0
 }
 
-export async function getTokenImage(token){
-    return Object.keys(cryptoCoinsEnum).includes(token) ? cryptoCoinsEnum[token].icon : "question.png";
-}
-
 export const getPoolData = async () => {
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = web3Provider.getSigner();
     const contract = new ethers.Contract(PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI, web3Provider);
     const totalPairs = await contract.connect(signer).allPairsLength();
     const totalPool = Array.from(Array(totalPairs.toNumber()),(_, i) => i);
-    const chunkSize = 4;
+    const chunkSize = CHUNK_SIZE;
     batch(() => {
         for (let i = 0; i < totalPairs; i += chunkSize) {
             const chunk = totalPool.slice(i, i + chunkSize);
