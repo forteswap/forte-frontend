@@ -59,7 +59,6 @@ export const fetchPoolData = (pairs) => {
                 userPoolAmount[poolTokens[1]] = getNumberValue(share * poolAmountToken2,decimal2);
                 totalPoolAmount[poolTokens[1]] = getNumberValue(poolAmountToken2,decimal2);
                 sharePer[poolTokens[1]] = 0;   
-                console.log(poolAmountToken1.toString());
 
                 const token1EconomicValue = poolTokens[0] == 0x826551890Dc65655a0Aceca109aB11AbDbD7a07B ? 0.30 : 0 
                 const token2EconomicValue = poolTokens[1] == 0xdE59F060D7ee2b612E7360E6C1B97c4d8289Ca2e ? 1 : 0
