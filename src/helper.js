@@ -52,7 +52,6 @@ export const getPoolData = async () => {
 
 export const roundDown = (number, decimals = 18) => {
    const value = ethers.utils.formatUnits(number, decimals);
-   console.log(number, value,decimals);
    let index = value.indexOf(".");
     return value.substring(0, index+4);
 }
