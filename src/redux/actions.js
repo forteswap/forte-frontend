@@ -36,6 +36,8 @@ export const fetchPoolData = (pairs) => {
                 const isStable = await poolContract.stable();
                 const token1 = systemTokens.where('address',poolTokens[0]).first();
                 const token2 = systemTokens.where('address',poolTokens[1]).first();
+
+
                 const share = LpBalanceFinal/LpTotalSupplyFinal;
                 const tokenNames = poolSymbol.split('-')[1].split('/');
                 // Token 1
@@ -56,15 +58,18 @@ export const fetchPoolData = (pairs) => {
                 userWalletBalance[poolTokens[1]] = getNumberValue(walletAmountToken2,decimal2);
                 userPoolAmount[poolTokens[1]] = getNumberValue(share * poolAmountToken2,decimal2);
                 totalPoolAmount[poolTokens[1]] = getNumberValue(poolAmountToken2,decimal2);
-                sharePer[poolTokens[1]] = 0;
+                sharePer[poolTokens[1]] = 0;   
 
+                const token1EconomicValue = poolTokens[0] == 0x826551890Dc65655a0Aceca109aB11AbDbD7a07B ? 0.30 : 0 
+                const token2EconomicValue = poolTokens[1] == 0xdE59F060D7ee2b612E7360E6C1B97c4d8289Ca2e ? 1 : 0
+                const tvlForPool = (poolAmountToken1.toString() * token1EconomicValue) + (poolAmountToken2.toString() * token2EconomicValue);
                 const singleLp = {
                     pairName: poolSymbol,
                     isStable: isStable,
                     token1Name: tokenNames[0].toLowerCase(),
                     token2Name: tokenNames[1].toLowerCase(),
                     pairAddress: LpAddress,
-                    lpTotalSupplyF: Number(LpTotalSupplyFinal),
+                    lpTotalSupplyF: Number(tvlForPool),
                     slug: (isStable ? 'stable' : 'volatile') + '-' + tokenNames[0].toLowerCase() + '-' + tokenNames[1].toLowerCase(),
                     address: {
                         token1: poolTokens[0],
