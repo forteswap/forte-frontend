@@ -58,7 +58,8 @@ export const roundDown = (number, decimals = 18) => {
 
 
 export const roundDownAndParse = (number, decimals = 18) => {
-    return ethers.utils.parseUnits(number, decimals);
+    let index = number.indexOf(".");
+    return ethers.utils.parseUnits(number.substring(0, index+(decimals+1)), decimals);
 }
 
 export const getTokenData = (token) => {
