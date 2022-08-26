@@ -85,15 +85,19 @@ const Add = (props) => {
             setFormData(oldValues => ({...oldValues, [name]: value}));
             if (name === "amountADesired") {
                 const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
+                console.log(value, priceRatioForToken2);
+
+
                 setFormData(oldValues => ({
                     ...oldValues,
-                    ['amountBDesired']: isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2).toString()
+                    ['amountBDesired']: isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2).toFixed(6)
                 }));
             } else {
                 const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
+                console.log(value, priceRatioForToken1);
                 setFormData(oldValues => ({
                     ...oldValues,
-                    ['amountADesired']: isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1).toString()
+                    ['amountADesired']: isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1).toFixed(6)
                 }));
             }
         }
@@ -131,6 +135,9 @@ const Add = (props) => {
             const poolAmountT2 = await erc20ContractToken2.balanceOf(currentPool.pairAddress);
             if (BalanceOfToken1.toString()) {
                 const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
+                console.log(BalanceOfToken1);
+                console.log(BalanceOfToken2);
+
                 setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
                 setPoolAmountToken1(getNumberValue(poolAmountT1, decimalOfToken1));
             }
@@ -179,6 +186,7 @@ const Add = (props) => {
 
     async function addLiquidity() {
         waitForConfirmation();
+           console.log(typeof formData.amountADesired);
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
         console.log(typeof amountADesired);

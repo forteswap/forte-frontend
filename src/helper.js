@@ -51,14 +51,15 @@ export const getPoolData = async () => {
 }
 
 export const roundDown = (number, decimals = 18) => {
-   const value =  (Number(number.toString()) / Math.pow(10, decimals))
-   return Math.floor( value * Math.pow(10, 6) ) / Math.pow(10, 6)
+   const value = ethers.utils.formatUnits(number, decimals);
+   console.log(number, value,decimals);
+   let index = value.indexOf(".");
+    return value.substring(0, index+4);
 }
 
 
 export const roundDownAndParse = (number, decimals = 18) => {
-    const roundValue = Math.floor( number * Math.pow(10, decimals) ) / Math.pow(10, decimals);
-    return ethers.utils.parseUnits(roundValue.toString(),decimals);
+    return ethers.utils.parseUnits(number, decimals);
 }
 
 export const getTokenData = (token) => {
