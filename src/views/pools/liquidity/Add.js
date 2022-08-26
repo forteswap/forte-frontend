@@ -253,11 +253,21 @@ const Add = (props) => {
 
     const setToken1Max = (val) => {
         setFormData(oldValues => ({...oldValues, ["amountADesired"]: val.toString()}));
-    };
+            const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
+            setFormData(oldValues => ({
+                ...oldValues,
+                ['amountBDesired']: isNaN(val * priceRatioForToken2) ? 0 : (val * priceRatioForToken2).toString()
+            }));
+        }
 
     const setToken2Max = (val) => {
         setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val.toString()}));
-    };
+        const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
+            setFormData(oldValues => ({
+                ...oldValues,
+                ['amountADesired']: isNaN(val * priceRatioForToken1) ? 0 : (val * priceRatioForToken1).toString()
+            }));
+        }
 
     const handleCheckbox = (val) => {
         setNativeCanto(val.target.checked);
