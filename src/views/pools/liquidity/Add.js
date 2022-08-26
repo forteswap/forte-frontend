@@ -87,13 +87,13 @@ const Add = (props) => {
                 const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
                 setFormData(oldValues => ({
                     ...oldValues,
-                    ['amountBDesired']: isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2).toFixed(6)
+                    ['amountBDesired']: isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2)
                 }));
             } else {
                 const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
                 setFormData(oldValues => ({
                     ...oldValues,
-                    ['amountADesired']: isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1).toFixed(6)
+                    ['amountADesired']: isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1)
                 }));
             }
         }
