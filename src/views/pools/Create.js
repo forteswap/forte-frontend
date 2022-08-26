@@ -22,7 +22,7 @@ import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import CryptoListModal from "../../components/modal/CryptoList";
-import {getNumberValue, isTokenApproved} from "../../helper";
+import {getNumberValue, isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
 
 const {ethers} = require('ethers');
 const Create = () => {
@@ -116,7 +116,7 @@ const Create = () => {
 
                 if (BalanceOfToken1.toString() > 0) {
                     const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                    setToken1Balance(getNumberValue(BalanceOfToken1, decimalOfToken1));
+                    setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
                 } else {
                     setToken1Balance(0);
                 }
@@ -127,7 +127,7 @@ const Create = () => {
                 setIsToken2Approved(BalanceOfToken22);
                 if (BalanceOfToken2.toString() > 0) {
                     const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                    setToken2Balance(getNumberValue(BalanceOfToken2, decimalOfToken2));
+                    setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
                 }else {
                     setToken2Balance(0);
                 }
@@ -169,11 +169,11 @@ const Create = () => {
     }
 
     const setToken1Max =(val) =>{
-        setFormData(oldValues => ({...oldValues, ["amountADesired"]: val}));
+        setFormData(oldValues => ({...oldValues, ["amountADesired"]: val.toString()}));
     };
 
     const setToken2Max =(val) =>{
-        setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val}));
+        setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val.toString()}));
     };
 
     const handleCheckbox = (val) => {
@@ -188,21 +188,22 @@ const Create = () => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
-        // const stable = crypto1.stable || crypto2.stable;
-        // const amountAMin = (99 * parseInt(formData.amountADesired)) / 100;
-        // const amountBMin = (99 * parseInt(formData.amountBDesired)) / 100;
+
+        const parsedAmountADesired = roundDownAndParse(formData.amountADesired,crypto1.decimal);
+        const parsedAmountBDesired = roundDownAndParse(formData.amountBDesired,crypto2.decimal);
+
 
         if (crypto1.name === 'WCANTO') {
 
             contract.connect(signer).addLiquidityCANTO(
                 token2,
                 isStable,
-                ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal),
+                parsedAmountBDesired,
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal)
+                    value: parsedAmountADesired
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -217,12 +218,12 @@ const Create = () => {
             contract.connect(signer).addLiquidityCANTO(
                 token1,
                 isStable,
-                ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal),
+                parsedAmountADesired,
                 0,
                 0,
                 accounts[0],
                 deadline, {
-                    value: ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal)
+                    value: parsedAmountBDesired
                 }
             ).then((result) => {
                 setConfirmationWaitingModal(false)
@@ -240,14 +241,12 @@ const Create = () => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
-        // const amountAMin = (99 * parseInt(formData.amountADesired)) / 100;
-        // const amountBMin = (99 * parseInt(formData.amountBDesired)) / 100;
         contract.connect(signer).addLiquidity(
             token1,
             token2,
             isStable,
-            ethers.utils.parseUnits(formData.amountADesired, crypto1.decimal),
-            ethers.utils.parseUnits(formData.amountBDesired, crypto2.decimal),
+            roundDownAndParse(formData.amountADesired,crypto1.decimal),
+            roundDownAndParse(formData.amountBDesired,crypto2.decimal),
             0,
             0,
             accounts[0],
