@@ -11,6 +11,15 @@ const fetchPostsSuccess = data => ({
     payload: {data}
 })
 
+function assignTokenPrice(address){
+    if(address === "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd"){
+        return 1;
+    } else if (address === "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B"){
+        return 0.30;
+    } else return 0;
+
+}
+
 export const fetchPoolData = (pairs) => {
     return async dispatch => {
         try {
@@ -58,18 +67,20 @@ export const fetchPoolData = (pairs) => {
                 userWalletBalance[poolTokens[1]] = getNumberValue(walletAmountToken2,decimal2);
                 userPoolAmount[poolTokens[1]] = getNumberValue(share * poolAmountToken2,decimal2);
                 totalPoolAmount[poolTokens[1]] = getNumberValue(poolAmountToken2,decimal2);
-                sharePer[poolTokens[1]] = 0;   
+                sharePer[poolTokens[1]] = 0;
 
-                const token1EconomicValue = poolTokens[0] == 0x826551890Dc65655a0Aceca109aB11AbDbD7a07B ? 0.30 : 0 
-                const token2EconomicValue = poolTokens[1] == 0xdE59F060D7ee2b612E7360E6C1B97c4d8289Ca2e ? 1 : 0
-                const tvlForPool = (poolAmountToken1.toString() * token1EconomicValue) + (poolAmountToken2.toString() * token2EconomicValue);
+                const token1EconomicValue = assignTokenPrice(poolTokens[0]);
+                const token2EconomicValue = assignTokenPrice(poolTokens[1]);
+
+                const tvlForPool = (getNumberValue(poolAmountToken1,decimal1) * token1EconomicValue) +
+                    (getNumberValue(poolAmountToken2,decimal2) * token2EconomicValue);
                 const singleLp = {
                     pairName: poolSymbol,
                     isStable: isStable,
                     token1Name: tokenNames[0].toLowerCase(),
                     token2Name: tokenNames[1].toLowerCase(),
                     pairAddress: LpAddress,
-                    lpTotalSupplyF: Number(tvlForPool),
+                    tvl: tvlForPool,
                     slug: (isStable ? 'stable' : 'volatile') + '-' + tokenNames[0].toLowerCase() + '-' + tokenNames[1].toLowerCase(),
                     address: {
                         token1: poolTokens[0],
