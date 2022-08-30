@@ -481,17 +481,6 @@ const Index = (types, values) => {
                         <ModalBody>
                             <Row>
                                 {/*<Col sm={12}>{JSON.stringify(formData)}</Col>*/}
-                                <Col sm={12} className="mt-3">
-                                    <div className="d-flex">
-                                        <div className="info-wrapper">
-                                            <img className="align-middle" src={infoImage} alt="info" height="20" width="20"/>
-                                        </div>
-                                        <p className="flex-grow-1 text-secondary">
-                                            Important Information - Here will be a note informing you about the time until the end of the transaction and about the acceptance in the event of a deadline
-                                        </p>
-                                    </div>
-                                    <hr/>
-                                </Col>
                                 {token1 && token2 ?
                                     <>
                                         <div className="d-flex justify-content-between mb-3">
