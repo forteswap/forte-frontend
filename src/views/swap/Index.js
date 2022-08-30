@@ -94,8 +94,12 @@ const Index = (types, values) => {
     const setInputVal = (name,value) => {
         setFormData(oldValues => ({...oldValues, [name]: value}));
         submitButton()
-        calculateRate(name,value).then()
+        // calculateRate(name,value).then()
     };
+
+    useEffect(() => {
+        calculateRate().then()
+    }, [formData.from,token1,token2]);
 
     useEffect(() => {
         contractInitialize().then()
@@ -218,32 +222,31 @@ const Index = (types, values) => {
         setButton1(button)
     }
 
-    const calculateRate = async (name, value) => {
-         if(name === "from"){
-             console.log(value)
-            const parseValue = roundDownAndParse(value,crypto1.decimal);
+    const calculateRate = async () => {
+        if (token2.length > 0) {
+            const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
             await contractInitialize().then()
             let to;
-            const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1,token2, true]]);
-            const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1,token2, false]]);
-            console.log(token1,token2,volatileRate[0].toString(),stableRate[1].toString() , volatileRate[1])
-            if (stableRate && volatileRate){
-                if(Number(stableRate[1].toString()) > Number(volatileRate[1].toString())){
-                    to = roundDownForSwap(stableRate[1].toString(),crypto2.decimal);
-                    setRoutes([[token1,token2, true]])
-                }else{
-                    to = roundDownForSwap(volatileRate[1].toString(),crypto2.decimal);
-                    setRoutes([[token1,token2, false]])
+            const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
+            const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
+            console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
+            if (stableRate && volatileRate) {
+                if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
+                    to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                    setRoutes([[token1, token2, true]])
+                } else {
+                    to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                    setRoutes([[token1, token2, false]])
                 }
                 setFormData(oldValues => ({...oldValues, ["to"]: to}));
 
-                if(to == 0 && value > 0){
+                if (to == 0 && formData.from > 0) {
                     setIsPairAvailable(true);
-                }else{
+                } else {
                     setIsPairAvailable(false);
                 }
             }
-         }
+        }
     }
 
     const swapIn = () => {
