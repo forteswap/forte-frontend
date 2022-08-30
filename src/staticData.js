@@ -7,6 +7,14 @@ import NetworkErrorModal from "./components/modal/NetworkError";
 import CustomModal from "./components/modal/Custom";
 
 export const cryptoCoinsEnum = {
+    canto: {
+        icon: "canto.svg",
+        title: "Canto",
+        name: "CANTO",
+        address: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B",
+        decimal: 18,
+        stable:false,
+    },
     eth: {
         icon: "eth.png",
         title: "Ethereum",

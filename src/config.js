@@ -2845,3 +2845,5 @@ export const PAIR_ABI = [
 export const APPROVAL_TOKENS = ethers.constants.MaxUint256;
 
 export const CHUNK_SIZE = 5
+
+export const DEADLINE_MINUTES= 30;

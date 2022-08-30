@@ -181,7 +181,7 @@
 	}
 }
 
-.form-control-coin {
+.form-control-coin, .form-control:disabled, .form-control[readonly] {
 	background-color: transparent;
 	color: #BBBBBB;
 	border: none;
@@ -372,12 +372,11 @@
 .info-wrapper {
 	background: #D9D9D9;
 	height: 34px;
-	width: 64px;
+	width: 90px;
 	border-radius: 34px;
 	margin-right: 0.7rem;
 	text-align: center;
 	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-	
 	img {
 		margin-top: 5px;
 	}
@@ -400,4 +399,57 @@
 
 .cursor-pointer {
 	cursor: pointer;
+}
+
+.nav-pills {
+	border: 3px solid #FFFFFF;
+	border-radius: 30px;
+}
+
+.nav-link {
+	padding-left: 25px;
+	padding-right: 25px;
+	font-size: 18px;
+	line-height: 23px;
+	color: #FFFFFF;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+	background: #FFFFFF;
+	border-radius: 100px;
+	font-style: normal;
+	font-weight: 700;
+	font-size: 18px;
+	line-height: 23px;
+	color: #418FFF;
+}
+
+.nav-link:hover, .nav-link:focus {
+	color: #FFFFFF;
+}
+
+.wallet-card {
+	border: 1px solid rgba(226, 226, 226, 0.5);
+	background: #f1f1f1;
+	border-radius: 20px;
+	padding: 18px 20px;;
+	justify-content: space-between;
+	margin: 8px 0;
+	width: 100%;
+	text-align: left;
+	color: #bebebe;
+	font-weight: 400;
+	font-size: 20px;
+	line-height: 23px;
+}
+
+body.dark-mode .wallet-card {
+	background-color: #303133;
+	border-color: #303133;
+}
+
+.setting-modal .form-control {
+	background: rgba(226, 226, 226, 0.5);
+	border-radius: 100px;
+	height: 42px;
 }
