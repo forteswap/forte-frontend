@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Col, Input, Modal, ModalBody, ModalHeader, Row} from "reactstrap";
+import {Button, Col, Input, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
 import {ERC20_CONTRACT} from "../../config";
 import {cryptoCoinsEnum} from "../../staticData";
 import {ethers} from "ethers";
@@ -53,7 +53,8 @@ const CryptoListModal = (props) => {
 
     return (
         <>
-            <Modal scrollable={true} isOpen={props.isOpen} backdrop={true} keyboard={false} centered={true}>
+            <Modal scrollable={true} isOpen={props.isOpen} backdrop={true} keyboard={true} centered={true}
+                   toggle={() => onValueUpdate(null)}>
                 <ModalHeader toggle={() => onValueUpdate(null)}>Select a Token</ModalHeader>
                 <Input className="mx-2 w-auto mb-2 with-bg" autoComplete="off" type="text"
                        onKeyPress={onKeyPressHandler} placeholder="Custom token address"
@@ -67,6 +68,11 @@ const CryptoListModal = (props) => {
                         </Col>
                     </Row>
                 </ModalBody>
+                <ModalFooter className="with-bg full-btn">
+                    <Button color="none" className="btn-starch btn btn-lg" onClick={() => onValueUpdate(null)}>
+                       Add Token
+                    </Button>
+                </ModalFooter>
             </Modal>
         </>
     );

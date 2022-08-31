@@ -13,16 +13,15 @@ import {
     Row
 } from "reactstrap";
 import downArrowImage from "../../assets/images/down-arrow.svg";
+import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList";
 import React, {useState, useEffect} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import SwapSetting from "../../components/modal/SwapSetting";
 import settingImg from "../../assets/images/setting.svg";
-import infoImage from "../../assets/images/info.svg";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS, DEADLINE_MINUTES} from "../../config";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import {
-    getDeadline,
-    getNumberValue,
+    getDeadline, handleException,
     isTokenApproved,
     roundDown,
     roundDownAndParse,
@@ -31,9 +30,8 @@ import {
 import detectEthereumProvider from "@metamask/detect-provider";
 import {ethers} from "ethers";
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
-import button from "bootstrap/js/src/button";
 
-const Index = (types, values) => {
+const Index = () => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts, button;
     const [formData, setFormData] = useState({
         from: "",
@@ -54,6 +52,7 @@ const Index = (types, values) => {
     const [isToken1Approved, setIsToken1Approved] = useState(false);
     const [isToken2Approved, setIsToken2Approved] = useState(false);
     const [isPairAvailable, setIsPairAvailable] = useState(false);
+    const [isFetchingPrice, setIsFetchingPrice] = useState(false);
     const [button1, setButton1] = useState("");
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
@@ -108,7 +107,6 @@ const Index = (types, values) => {
 
     const contractInitialize = async () => {
         try {
-
             let provider = await detectEthereumProvider();
             if (provider) {
                 web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -223,7 +221,9 @@ const Index = (types, values) => {
     }
 
     const calculateRate = async () => {
-        if (token2.length > 0) {
+        if (token2.length > 0 && formData.from.length > 0) {
+            setIsFetchingPrice(true);
+            setIsPairAvailable(false);
             const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
             await contractInitialize().then()
             let to;
@@ -239,34 +239,38 @@ const Index = (types, values) => {
                     setRoutes([[token1, token2, false]])
                 }
                 setFormData(oldValues => ({...oldValues, ["to"]: to}));
-
-                if (to == 0 && formData.from > 0) {
+                if (to === "0" && formData.from > 0) {
                     setIsPairAvailable(true);
                 } else {
                     setIsPairAvailable(false);
                 }
+                setIsFetchingPrice(false);
             }
         }
     }
 
-    const swapIn = () => {
-        if(crypto1.title === cryptoCoinsEnum.canto.title){
-            swapExactCANTOForTokens().then();
-        }else if(crypto1.title !== cryptoCoinsEnum.canto.title && crypto2.title === cryptoCoinsEnum.canto.title) {
-            swapExactTokensForCANTO().then()
-        }else{
-            swapExactTokensForTokens().then()
+    const swapIn = async () => {
+        const slippage = localStorage.getItem('forteSlippage');
+        const afterSlippage = (1 - (slippage / 100)) * formData.to;
+        console.log('slip', slippage, formData.to, afterSlippage.toFixed(5))
+        const amountOutMin = roundDownAndParse(afterSlippage.toFixed(5), crypto2.decimal)
+        if (crypto1.title === cryptoCoinsEnum.canto.title) {
+            swapExactCANTOForTokens(amountOutMin).then();
+        } else if (crypto1.title !== cryptoCoinsEnum.canto.title && crypto2.title === cryptoCoinsEnum.canto.title) {
+            swapExactTokensForCANTO(amountOutMin).then()
+        } else {
+            swapExactTokensForTokens(amountOutMin).then()
         }
     }
 
-    const swapExactCANTOForTokens = async () => {
+    const swapExactCANTOForTokens = async (amountOutMin) => {
         console.log("from CANTO to ERC20")
         try {
             waitForConfirmation();
             await contractInitialize();
             const deadline =  getDeadline();
             const transaction  = await contract.connect(signer).swapExactCANTOForTokens(
-                roundDownAndParse(formData.to,crypto2.decimal),
+                amountOutMin,
                 routes,
                 accounts[0],
                 deadline,
@@ -281,12 +285,11 @@ const Index = (types, values) => {
             })
             showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {hash: transaction.hash})
         } catch (e) {
-            showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
-            console.log(e)
+            handleException(e)
         }
     }
 
-    const swapExactTokensForCANTO = async () => {
+    const swapExactTokensForCANTO = async (amountOutMin) => {
         console.log("from ERC20 to CANTO")
         try {
             waitForConfirmation();
@@ -294,7 +297,7 @@ const Index = (types, values) => {
             const deadline = getDeadline();
             const transaction = await contract.connect(signer).swapExactTokensForCANTO(
                 roundDownAndParse(formData.from,crypto1.decimal),
-                roundDownAndParse(formData.to,crypto2.decimal),
+                amountOutMin,
                 routes,
                 accounts[0],
                 deadline
@@ -305,12 +308,11 @@ const Index = (types, values) => {
                 title: "Swap was successful!"
             })
         } catch (e) {
-            showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
-            console.log(e)
+            handleException(e)
         }
     }
 
-    const swapExactTokensForTokens = async () => {
+    const swapExactTokensForTokens = async (amountOutMin) => {
         console.log("between two ERC20 token")
         try {
             waitForConfirmation();
@@ -318,7 +320,7 @@ const Index = (types, values) => {
             const deadline = getDeadline();
             const transaction = await contract.connect(signer).swapExactTokensForTokens(
                 roundDownAndParse(formData.from,crypto1.decimal),
-                roundDownAndParse(formData.to,crypto2.decimal),
+                amountOutMin,
                 routes,
                 accounts[0],
                 deadline
@@ -329,9 +331,21 @@ const Index = (types, values) => {
                 title: "Swap was successful!"
             })
         } catch (e) {
-            showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
-            console.log(e)
+            handleException(e)
         }
+    }
+
+    const handleException = (e) => {
+        hideModal()
+        setConfirmationWaitingModal(false)
+        switch (e.code) {
+            case "ACTION_REJECTED":
+                showModal(modalTypesEnum.TRANSACTION_REJECTED_MODAL);
+                break;
+            default:
+                showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
+        }
+        return true
     }
 
     return (
@@ -464,6 +478,13 @@ const Index = (types, values) => {
                                     <Col sm={12}>
                                         { (isPairAvailable) ?
                                             <span className="text-danger"> Pair is not available</span>
+                                            : null
+                                        }
+                                        { (isFetchingPrice) ?
+                                            <span className="ps-2">
+                                                <img src={fetchingLoader} height="20px" alt=""/>
+                                                &nbsp;Fetching best price...
+                                            </span>
                                             : null
                                         }
                                     </Col>
