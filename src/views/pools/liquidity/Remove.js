@@ -137,7 +137,7 @@ function Remove(props) {
                     <Card>
                         <CardHeader>
                             <div className="d-flex">
-                                <Link to={"/"} className="me-3">
+                                <Link to={"/pool"} className="me-3">
                                     <img src={leftArrowImage} className="align-middle me-1" alt="back"/>
                                 </Link>
                                 <CardTitle tag='h3'>Remove Liquidity</CardTitle>
@@ -174,7 +174,7 @@ function Remove(props) {
                                             </button>
                                             <div className="mt-2">
                                                 <span className="text-balance">Balance: {currentPool.userLpBalance} LP Tokens</span>
-                                                <button className="btn btn-outline-light btn-sm ms-2 fw-normal"
+                                                <button className="btn button-max btn-sm ms-2"
                                                         onClick={setLiquidityMax}>
                                                     Max
                                                 </button>

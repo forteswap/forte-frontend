@@ -22,7 +22,7 @@ import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import CryptoListModal from "../../components/modal/CryptoList";
-import {getNumberValue, isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
+import {isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
 
 const {ethers} = require('ethers');
 const Create = () => {
@@ -270,7 +270,7 @@ const Create = () => {
                         <Card>
                             <CardHeader>
                                 <div className="d-flex w-100">
-                                    <Link to={"/"} className="me-3">
+                                    <Link to={"/pool"} className="me-3">
                                         <img src={leftArrowImage} className="align-middle flex-grow-0 me-1" alt="back"/>
                                     </Link>
                                     <CardTitle tag='h3' className="flex-grow-0">Create a Pool</CardTitle>
@@ -290,12 +290,15 @@ const Create = () => {
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                <div className="form-switch row" style={{ display: 'flex', alignItems: 'center'}}>
-                                    <label className="col-sm-3 col-form-label">Volatile</label>
-                                    <input className="col-sm-3 form-check-input cursor-pointer" type="checkbox" role="switch"
-                                           onChange={changePosition}/>
-                                    <label className="col-sm-3 col-form-label">Stable</label>
-                                </div>
+                                    <div className="form-switch row" style={{ display: 'flex', alignItems: 'center'}}>
+                                        <label
+                                            className={"col-sm-3 col-form-label " + (!isStable ? "label-selected" : "")}>Volatile</label>
+                                        <input className="col-sm-3 form-check-input cursor-pointer" type="checkbox"
+                                               role="switch"
+                                               onChange={changePosition}/>
+                                        <label
+                                            className={"col-sm-3 col-form-label " + (isStable ? "label-selected" : "")}>Stable</label>
+                                    </div>
                                     <Col sm={12}>
                                         <div className="balance-card">
                                             <Input autoComplete="off" type="text"
@@ -309,7 +312,8 @@ const Create = () => {
                                                     {
                                                         crypto1 ?
                                                             <>
-                                                                <img className="align-middle float-start" height="28"
+                                                                <img className="align-middle float-start coin-img"
+                                                                     height="28"
                                                                      src={require("../../assets/images/coins/" + crypto1.icon)}
                                                                      alt="coinImg"/>
                                                                 <span
@@ -327,7 +331,7 @@ const Create = () => {
                                                 <div className="mt-2">
                                                     <span
                                                         className="text-balance">Balance: {token1Balance + ' ' + crypto1.name}</span>
-                                                    <button className="btn btn-outline-light btn-sm ms-2 fw-normal"
+                                                    <button className="btn button-max btn-sm ms-2"
                                                             onClick={() => setToken1Max(token1Balance)}>
                                                         Max
                                                     </button>
@@ -351,7 +355,8 @@ const Create = () => {
                                                     {
                                                         crypto2 !== null ?
                                                             <>
-                                                                <img className="align-middle float-start" height="28"
+                                                                <img className="align-middle float-start coin-img"
+                                                                     height="28"
                                                                      src={require("../../assets/images/coins/" + crypto2.icon)}
                                                                      alt="coinImg"/>
                                                                 <span
@@ -373,7 +378,7 @@ const Create = () => {
                                                             <span
                                                                 className="text-balance">Balance: {token2Balance + ' ' + crypto2.name}</span>
                                                             <button onClick={() => setToken2Max(token2Balance)}
-                                                                    className="btn btn-outline-light btn-sm ms-2 fw-normal">
+                                                                    className="btn button-max btn-sm ms-2">
                                                                 Max
                                                             </button>
                                                         </div>
@@ -387,11 +392,11 @@ const Create = () => {
                                     <Col sm={12} className="mt-4 price-info">
                                         <div className="d-flex justify-content-evenly">
                                             <div className="text-center flex-grow-1">
-                                                <span className="title">{formData.amountADesired}</span>
-                                                <p className="mb-0 sub-title">{crypto1 ? crypto1.name : ''}</p>
+                                                <span className="title">{formData.amountADesired || '-'}</span>
+                                                <p className="mb-0 sub-title">{crypto1 ? crypto1.name : '-'}</p>
                                             </div>
                                             <div className="text-center border-start border-end flex-grow-1">
-                                                <span className="title">{formData.amountBDesired}</span>
+                                                <span className="title">{formData.amountBDesired || '-'}</span>
                                                 <p className="mb-0 sub-title">{crypto2 ? crypto2.name : '-'}</p>
                                             </div>
                                             <div className="text-center flex-grow-1">
@@ -400,12 +405,12 @@ const Create = () => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "my-5" : "mb-5" }>
+                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "mt-3" : "mb-3" }>
                                         <div className="d-flex">
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(1)}>
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../assets/images/coins/" + crypto1.icon)}
                                                          alt="coinImg"/>
                                                     <span
@@ -416,7 +421,7 @@ const Create = () => {
                                             {(crypto2 && !isToken2Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 ms-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(2)}>
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../assets/images/coins/" + crypto2.icon)}
                                                          alt="coinImg"/>
                                                     <span
@@ -428,7 +433,7 @@ const Create = () => {
                                     <Col sm={12}>
                                         <button onClick={togglePreviewModal}
                                                 disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6">
+                                                className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
                                             Add
                                         </button>
                                     </Col>
@@ -436,34 +441,34 @@ const Create = () => {
                             </CardBody>
                         </Card>
                     </Col>
-                        {/*Info: Preview Modal */}
-                        <Modal isOpen={previewModal} backdrop={true} keyboard={false} centered={true}>
-                            <ModalHeader toggle={togglePreviewModal}>Preview</ModalHeader>
-                            <ModalBody>
-                                <Row>
-                                    <Col sm={12}>
-                                        <div className="balance-card-group">
-                                            {token1 && token2 ?
-                                                <div className="balance-card">
-                                                    <div>
-                                                        <small className="text-primary">Pair</small>
-                                                        <span className="align-middle coin-value ps-2">{crypto1.name}/{crypto2.name}</span>
-                                                    </div>
-                                                    <div className="text-end">
-                                                        <div className="coin-group pe-2">
-                                                            <div className="coin pull-up">
-                                                                <img src={require("../../assets/images/coins/" + crypto1.icon)} alt="coinImg" height="35" width="35"/>
-                                                            </div>
-                                                            <div className="coin pull-up">
-                                                                <img src={require("../../assets/images/coins/" + crypto2.icon)} alt="coinImg" height="35" width="35"/>
-                                                            </div>
+                    {/*Info: Preview Modal */}
+                    <Modal isOpen={previewModal} backdrop={true} keyboard={false} centered={true}>
+                        <ModalHeader toggle={togglePreviewModal}>Preview</ModalHeader>
+                        <ModalBody>
+                            <Row>
+                                <Col sm={12}>
+                                    <div className="balance-card-group">
+                                        {token1 && token2 ?
+                                            <div className="balance-card">
+                                                <div>
+                                                    <small className="text-primary">Pair</small>
+                                                    <span className="align-middle coin-value ps-2">{crypto1.name}/{crypto2.name}</span>
+                                                </div>
+                                                <div className="text-end">
+                                                    <div className="coin-group pe-2">
+                                                        <div className="coin pull-up">
+                                                            <img src={require("../../assets/images/coins/" + crypto1.icon)} alt="coinImg" height="35" width="35"/>
+                                                        </div>
+                                                        <div className="coin pull-up">
+                                                            <img src={require("../../assets/images/coins/" + crypto2.icon)} alt="coinImg" height="35" width="35"/>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                             : ''}
-                                        </div>
-                                    </Col>
-                                    {crypto1 && crypto2 ?
+                                    </div>
+                                </Col>
+                                {crypto1 && crypto2 ?
                                     <Col sm={12} className="mt-4">
                                         <div className="h6">Pool Details</div>
                                         <hr className="mt-4"/>
@@ -492,53 +497,53 @@ const Create = () => {
                                         </div>
                                     </Col>
                                     : ""}
-                                    <Col sm={12} className="mt-4">
-                                        <div className="h6">Transaction Summary</div>
-                                        <hr className="mt-4"/>
-                                        <div className="d-flex justify-content-between">
-                                            <span className="text-secondary">Price Impact</span>
-                                            <span className="text-end">--</span>
-                                        </div>
-                                        <div className="d-flex justify-content-between">
-                                            <span className="text-secondary">Network Fee</span>
-                                            <span className="text-end">--</span>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </ModalBody>
-                            <ModalFooter className="with-bg full-btn">
-                                <Button color="none" onClick={isNativeCANTO ? addLiquidityCANTO : addLiquidity} className="btn-starch btn btn-lg">
-                                    Confirm to Create a Pool
-                                </Button>
-                            </ModalFooter>
-                        </Modal>
+                                <Col sm={12} className="mt-4">
+                                    <div className="h6">Transaction Summary</div>
+                                    <hr className="mt-4"/>
+                                    <div className="d-flex justify-content-between">
+                                        <span className="text-secondary">Price Impact</span>
+                                        <span className="text-end">--</span>
+                                    </div>
+                                    <div className="d-flex justify-content-between">
+                                        <span className="text-secondary">Network Fee</span>
+                                        <span className="text-end">--</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </ModalBody>
+                        <ModalFooter className="with-bg full-btn">
+                            <Button color="none" onClick={isNativeCANTO ? addLiquidityCANTO : addLiquidity} className="btn-starch btn btn-lg">
+                                Confirm to Create a Pool
+                            </Button>
+                        </ModalFooter>
+                    </Modal>
 
-                        {/*Info: Confirmation Waiting Modal */}
-                        <Modal isOpen={confirmationWaitingModal} backdrop={true} keyboard={false} centered={true}>
-                            <ModalHeader toggle={toggleConfirmationWaitingModal}/>
-                            <ModalBody>
-                                <Row>
-                                    <Col sm="12" className="text-center">
-                                        <div className="modal-confirmation-wrapper"/>
-                                        <div className="h5">Waiting for Confirmation</div>
-                                        <hr className="mt-4 "/>
-                                        <p className="mt-3 text-secondary">
-                                            {crypto1 && crypto2 ?
-                                                <b>Creating {formData.amountADesired + ' ' + crypto1.name} and&nbsp;
-                                                    {formData.amountBDesired + ' ' + crypto2.name}
-                                                </b>
-                                                : ''}
-                                            <br/>
-                                            Confirm this transaction in your wallet
-                                        </p>
-                                    </Col>
-                                </Row>
-                            </ModalBody>
-                        </Modal>
+                    {/*Info: Confirmation Waiting Modal */}
+                    <Modal isOpen={confirmationWaitingModal} backdrop={true} keyboard={false} centered={true}>
+                        <ModalHeader toggle={toggleConfirmationWaitingModal}/>
+                        <ModalBody>
+                            <Row>
+                                <Col sm="12" className="text-center">
+                                    <div className="modal-confirmation-wrapper"/>
+                                    <div className="h5">Waiting for Confirmation</div>
+                                    <hr className="mt-4 "/>
+                                    <p className="mt-3 text-secondary">
+                                        {crypto1 && crypto2 ?
+                                            <b>Creating {formData.amountADesired + ' ' + crypto1.name} and&nbsp;
+                                                {formData.amountBDesired + ' ' + crypto2.name}
+                                            </b>
+                                            : ''}
+                                        <br/>
+                                        Confirm this transaction in your wallet
+                                    </p>
+                                </Col>
+                            </Row>
+                        </ModalBody>
+                    </Modal>
 
-                        <CryptoListModal isOpen={cryptoModal1} skipToken={token2} onValueUpdate={val => cryptoUpdate(1, val)}/>
+                    <CryptoListModal isOpen={cryptoModal1} skipToken={token2} onValueUpdate={val => cryptoUpdate(1, val)}/>
 
-                        <CryptoListModal isOpen={cryptoModal2} skipToken={token1} onValueUpdate={val => cryptoUpdate(2, val)}/>
+                    <CryptoListModal isOpen={cryptoModal2} skipToken={token1} onValueUpdate={val => cryptoUpdate(2, val)}/>
                 </Row>
             </Container>
         </>
