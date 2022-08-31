@@ -281,7 +281,7 @@ const Add = (props) => {
                         <Card>
                             <CardHeader>
                                 <div className="d-flex w-100">
-                                    <Link to={"/"} className="me-3 flex-grow-0">
+                                    <Link to={"/pool"} className="me-3 flex-grow-0">
                                         <img src={leftArrowImage} className="align-middle me-1" alt="back"/>
                                     </Link>
                                     <CardTitle className="align-middle flex-grow-0">Add Liquidity</CardTitle>
@@ -317,7 +317,7 @@ const Add = (props) => {
                                                    spellCheck="false" className="form-control-coin" ref={token1Input}/>
                                             <div className="text-end">
                                                 <button className="btn btn-forte-image py-2 px-3 ms-auto">
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto1.icon)}
                                                          alt="coinImg"/>
                                                     <span className="align-middle ps-2 pe-4"> {crypto1.name}</span>
@@ -325,7 +325,7 @@ const Add = (props) => {
                                                 <div className="mt-2">
                                                     <span
                                                         className="text-balance">Balance: {token1Balance + ' ' + crypto1.name}</span>
-                                                    <button className="btn btn-outline-light btn-sm ms-2 fw-normal"
+                                                    <button className="btn button-max btn-sm ms-2"
                                                             onClick={() => setToken1Max(token1Balance)}>
                                                         Max
                                                     </button>
@@ -345,7 +345,7 @@ const Add = (props) => {
                                                    spellCheck="false" className="form-control-coin" ref={token2Input}/>
                                             <div className="text-end">
                                                 <button className="btn btn-forte-image py-2 px-3 ms-auto">
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto2.icon)}
                                                          alt="coinImg"/>
                                                     <span className="align-middle ps-2 pe-4"> {crypto2.name}</span>
@@ -353,7 +353,7 @@ const Add = (props) => {
                                                 <div className="mt-2">
                                                     <span
                                                         className="text-balance">Balance: {token2Balance + ' ' + crypto2.name}</span>
-                                                    <button className="btn btn-outline-light btn-sm ms-2 fw-normal"
+                                                    <button className="btn button-max btn-sm ms-2"
                                                             onClick={() => setToken2Max(token2Balance)}>
                                                         Max
                                                     </button>
@@ -380,12 +380,12 @@ const Add = (props) => {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "my-5" : "mb-5" }>
+                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "m-5" : "mb-5" }>
                                         <div className="d-flex">
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(1)}>
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto1.icon)}
                                                          alt="coinImg"/>
                                                     <span
@@ -396,7 +396,7 @@ const Add = (props) => {
                                             {(crypto2 && !isToken2Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 ms-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(2)}>
-                                                    <img className="align-middle float-start" height="28"
+                                                    <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto2.icon)}
                                                          alt="coinImg"/>
                                                     <span
@@ -408,7 +408,7 @@ const Add = (props) => {
                                     <Col sm={12}>
                                         <button onClick={togglePreviewModal}
                                                 disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6">
+                                                className="btn btn-lg btn-primary align-items-center` py-4` btn-starch fs-6">
                                             Add
                                         </button>
                                     </Col>
@@ -430,7 +430,7 @@ const Add = (props) => {
                                                     className="align-middle coin-value">{formData.amountADesired}</span>
                                                 <div className="text-end">
                                                     <div className="align-items-center px-3">
-                                                        <img className="me-2 align-middle" alt="coinImg"
+                                                        <img className="me-2 align-middle coin-img" alt="coinImg"
                                                              src={require("../../../assets/images/coins/" + crypto1.icon)}
                                                              height="30" width="30"/>
                                                         <span className="align-middle coin-symbol">{crypto1.name}</span>
@@ -448,7 +448,7 @@ const Add = (props) => {
                                                     className="align-middle coin-value">{formData.amountBDesired}</span>
                                                 <div className="text-end">
                                                     <div className="align-items-center px-3">
-                                                        <img className="me-2 align-middle" alt="coinImg"
+                                                        <img className="me-2 align-middle coin-img" alt="coinImg"
                                                              src={require("../../../assets/images/coins/" + crypto2.icon)}
                                                              height="30" width="30"/>
                                                         <span className="align-middle coin-symbol">{crypto2.name}</span>
