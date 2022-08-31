@@ -7,6 +7,7 @@ import {ethers} from "ethers";
 const CryptoListModal = (props) => {
     const {onValueUpdate} = props;
     const [cryptoList, setCryptoList] = useState([]);
+    const [newAddress, setNewAddress] = useState("");
 
     useEffect(() => {
         updateCryptoList(Object.values(cryptoCoinsEnum));
@@ -33,31 +34,30 @@ const CryptoListModal = (props) => {
         setCryptoList(list);
     }
 
-    const onKeyPressHandler = async (e) => {
-         if (e.key === 'Enter') {
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            const contract = new ethers.Contract(e.target.value, ERC20_CONTRACT, web3Provider);
-            const tokenName = await contract.name();
-            const symbol = await contract.symbol();
-             const cryptoCoin = {
-                icon: "question.png",
-                title: tokenName,
-                name: symbol,
-                address: e.target.value,
-                decimal: 18,
-                stable:false,
-            };
-            onValueUpdate(cryptoCoin);
-         }
-     };
 
+    const addToken = async () => {
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        const contract = new ethers.Contract(newAddress, ERC20_CONTRACT, web3Provider);
+        const tokenName = await contract.name();
+        const symbol = await contract.symbol();
+        const cryptoCoin = {
+            icon: "question.png",
+            title: tokenName,
+            name: symbol,
+            address: newAddress,
+            decimal: 18,
+            stable: false,
+        };
+        onValueUpdate(cryptoCoin);
+    }
     return (
         <>
             <Modal scrollable={true} isOpen={props.isOpen} backdrop={true} keyboard={true} centered={true}
                    toggle={() => onValueUpdate(null)}>
                 <ModalHeader toggle={() => onValueUpdate(null)}>Select a Token</ModalHeader>
                 <Input className="mx-2 w-auto mb-2 with-bg" autoComplete="off" type="text"
-                       onKeyPress={onKeyPressHandler} placeholder="Custom token address"
+                       placeholder="Custom token address"
+                       onChange={(val) => setNewAddress(val.target.value)}
                 />
                 <ModalBody className="pt-0">
                     <Row>
@@ -69,8 +69,8 @@ const CryptoListModal = (props) => {
                     </Row>
                 </ModalBody>
                 <ModalFooter className="with-bg full-btn">
-                    <Button color="none" className="btn-starch btn btn-lg" onClick={() => onValueUpdate(null)}>
-                       Add Token
+                    <Button color="none" className="btn-starch btn btn-lg" onClick={addToken}>
+                        Add Token
                     </Button>
                 </ModalFooter>
             </Modal>

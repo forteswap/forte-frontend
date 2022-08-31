@@ -5,10 +5,9 @@ import {useNavigate} from "react-router";
 import {useGlobalModalContext} from "./GlobalModal";
 
 const TransactionFailModal = () => {
-    const {hideModal} = useGlobalModalContext();
-    // const { hideModal, store } = useGlobalModalContext();
-    // const { modalProps } = store || {};
-    // const { title, confirmBtn } = modalProps || {};
+    const { hideModal, store } = useGlobalModalContext();
+    const { modalProps } = store || {};
+    const { isSwap } = modalProps || {};
     const navigate = useNavigate();
 
     const toggleIsOpenModal = () => {
@@ -16,6 +15,11 @@ const TransactionFailModal = () => {
     };
 
     const poolIndex = () => {
+        navigate('/pool');
+        hideModal();
+    }
+
+    const swapIndex = () => {
         navigate('/');
         hideModal();
     }
@@ -39,9 +43,15 @@ const TransactionFailModal = () => {
                     </Row>
                 </ModalBody>
                 <ModalFooter className="with-bg full-btn">
-                    <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
-                        Return to Pools
-                    </Button>
+                    {isSwap ?
+                        <Button onClick={swapIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Swap
+                        </Button>
+                        :
+                        <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Pools
+                        </Button>
+                    }
                 </ModalFooter>
             </Modal>
         </>

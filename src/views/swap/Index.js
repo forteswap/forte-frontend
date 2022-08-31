@@ -21,7 +21,7 @@ import SwapSetting from "../../components/modal/SwapSetting";
 import settingImg from "../../assets/images/setting.svg";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import {
-    getDeadline, handleException,
+    getDeadline,
     isTokenApproved,
     roundDown,
     roundDownAndParse,
@@ -68,7 +68,7 @@ const Index = () => {
         toggleConfirmationWaitingModal();
     }
 
-    const cryptoUpdate = (type, value) => {
+    const cryptoUpdate = (type, value) =>   {
         switch (type) {
             case 1:
                 if(value) {
@@ -208,13 +208,13 @@ const Index = () => {
 
     const submitButton = () => {
         if(token1.length <= 0  || token2.length <= 0 ){
-             button = <button className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
-                           Select Token
-                       </button>
+            button = <button className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
+                Select Token
+            </button>
         }  else {
             button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
-                            Swap In
-                      </button>
+                Swap In
+            </button>
         }
 
         setButton1(button)
@@ -229,7 +229,7 @@ const Index = () => {
             let to;
             const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
             const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
-            console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
+            // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
             if (stableRate && volatileRate) {
                 if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
                     to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
@@ -239,7 +239,7 @@ const Index = () => {
                     setRoutes([[token1, token2, false]])
                 }
                 setFormData(oldValues => ({...oldValues, ["to"]: to}));
-                if (to === "0" && formData.from > 0) {
+                if (to == 0 && formData.from > 0) {
                     setIsPairAvailable(true);
                 } else {
                     setIsPairAvailable(false);
@@ -281,9 +281,9 @@ const Index = () => {
             await transaction.wait()
             showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {
                 hash: transaction.hash,
-                title: "Swap was successful!"
+                title: "Swap was successful!",
+                isSwap: true
             })
-            showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {hash: transaction.hash})
         } catch (e) {
             handleException(e)
         }
@@ -305,7 +305,8 @@ const Index = () => {
             await transaction.wait()
             showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {
                 hash: transaction.hash,
-                title: "Swap was successful!"
+                title: "Swap was successful!",
+                isSwap: true
             })
         } catch (e) {
             handleException(e)
@@ -328,7 +329,8 @@ const Index = () => {
             await transaction.wait()
             showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {
                 hash: transaction.hash,
-                title: "Swap was successful!"
+                title: "Swap was successful!",
+                isSwap: true
             })
         } catch (e) {
             handleException(e)
@@ -336,14 +338,13 @@ const Index = () => {
     }
 
     const handleException = (e) => {
-        hideModal()
         setConfirmationWaitingModal(false)
         switch (e.code) {
             case "ACTION_REJECTED":
-                showModal(modalTypesEnum.TRANSACTION_REJECTED_MODAL);
+                showModal(modalTypesEnum.TRANSACTION_REJECTED_MODAL, { isSwap: true });
                 break;
             default:
-                showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
+                showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL, { isSwap: true });
         }
         return true
     }
@@ -477,7 +478,7 @@ const Index = () => {
                                     </Col>
                                     <Col sm={12}>
                                         { (isPairAvailable) ?
-                                            <span className="text-danger"> Pair is not available</span>
+                                            <span className="text-danger ps-2"> Pair is not available</span>
                                             : null
                                         }
                                         { (isFetchingPrice) ?
@@ -599,7 +600,6 @@ const Index = () => {
                     <CryptoListModal isOpen={cryptoModal2} skipToken={token1} onValueUpdate={val => cryptoUpdate(2, val)}/>
 
                     {/*<WalletConnectModal isOpen={walletModal} onValueUpdate={toggleWalletModal}/>*/}
-
                     <SwapSetting isOpen={settingModal} onValueUpdate={toggleSettingModal}/>
                 </Row>
             </Container>

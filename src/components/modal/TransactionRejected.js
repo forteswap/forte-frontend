@@ -6,8 +6,8 @@ import {useGlobalModalContext} from "./GlobalModal";
 
 const TransactionRejectedModal = (props) => {
     const { hideModal, store } = useGlobalModalContext();
-    // const { modalProps } = store || {};
-    // const { title, confirmBtn } = modalProps || {};
+    const { modalProps } = store || {};
+    const { isSwap } = modalProps || {};
     const navigate = useNavigate();
 
     const toggleIsOpenModal = () => {
@@ -15,10 +15,14 @@ const TransactionRejectedModal = (props) => {
     };
 
     const poolIndex = () => {
-        navigate('/');
+        navigate('/pool');
         hideModal();
     }
 
+    const swapIndex = () => {
+        navigate('/');
+        hideModal();
+    }
     return (
         <>
             <Modal isOpen={true} backdrop={true} keyboard={false} centered={true}>
@@ -38,9 +42,15 @@ const TransactionRejectedModal = (props) => {
                     </Row>
                 </ModalBody>
                 <ModalFooter className="with-bg full-btn">
-                    <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
-                        Return to Pools
-                    </Button>
+                    {isSwap ?
+                        <Button onClick={swapIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Swap
+                        </Button>
+                        :
+                        <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Pools
+                        </Button>
+                    }
                 </ModalFooter>
             </Modal>
         </>
