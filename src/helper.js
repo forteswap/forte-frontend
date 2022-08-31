@@ -1,9 +1,10 @@
-import {CHUNK_SIZE, CONTRACT_ADDRESS, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config";
-import {cryptoCoinsEnum} from "./staticData";
+import {CHUNK_SIZE, CONTRACT_ADDRESS, DEADLINE_MINUTES, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config";
+import {cryptoCoinsEnum, modalTypesEnum} from "./staticData";
 import {ethers} from "ethers";
 import {batch} from "react-redux";
 import store from "./redux/store";
 import {fetchPoolData} from "./redux/actions";
+import {useGlobalModalContext} from "./components/modal/GlobalModal";
 
 const Snackbar = require('node-snackbar');
 
@@ -56,6 +57,12 @@ export const roundDown = (number, decimals = 18) => {
     return value.substring(0, index+4);
 }
 
+export const roundDownForSwap = (number, decimals = 18) => {
+    const value = ethers.utils.formatUnits(number, decimals);
+    let index = value.indexOf(".");
+    return value.substring(0, index+6);
+}
+
 
 export const roundDownAndParse = (number, decimals = 18) => {
     let index = number.indexOf(".");
@@ -73,4 +80,8 @@ export const getTokenData = (token) => {
     }else{
         return cryptoCoinsEnum[token]
     }
+}
+
+export const getDeadline = (minutes = DEADLINE_MINUTES) => {
+    return Math.round(new Date(new Date().getTime() + minutes * 60000) / 1000);
 }

@@ -7,6 +7,22 @@ import NetworkErrorModal from "./components/modal/NetworkError";
 import CustomModal from "./components/modal/Custom";
 
 export const cryptoCoinsEnum = {
+    canto: {
+        icon: "canto.svg",
+        title: "Canto",
+        name: "CANTO",
+        address: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B",
+        decimal: 18,
+        stable:false,
+    },
+    wcanto: {
+        icon: "canto.svg",
+        title: "WCanto",
+        name: "WCANTO",
+        address: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B",
+        decimal: 18,
+        stable:false,
+    },
     eth: {
         icon: "eth.png",
         title: "Ethereum",
@@ -28,14 +44,6 @@ export const cryptoCoinsEnum = {
         title: "cINU",
         name: "cINU",
         address: "0x7264610A66EcA758A8ce95CF11Ff5741E1fd0455",
-        decimal: 18,
-        stable:false,
-    },
-    wcanto: {
-        icon: "canto.svg",
-        title: "WCanto",
-        name: "WCANTO",
-        address: "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B",
         decimal: 18,
         stable:false,
     },

@@ -2,9 +2,12 @@ import React, {useEffect, useState} from "react";
 import {displayErrorMessage, getPoolData} from "../helper";
 import logo from "../assets/images/forte_logo_white.png"
 import {connect} from "react-redux";
+import {Link} from "react-router-dom";
+import {useLocation} from "react-router";
 
 const Navigation = () => {
     let provider = window.ethereum;
+    const location = useLocation();
     const [buttonTitle, setButtonTitle] = useState('Connect Metamask');
 
     const connect = async (showMessage = false) => {
@@ -44,24 +47,46 @@ const Navigation = () => {
     }, []);
 
     const changeMode = (val) => {
-        if(val.target.checked){
+        if (val.target.checked) {
             document.getElementById('main-body').classList.add('dark-mode');
-        }else{
+        } else {
             document.getElementById('main-body').classList.remove('dark-mode');
         }
     }
 
-
+    // const wConnect = async () => {
+    // const provider = new WalletConnectProvider.default({
+    //     rpc: {
+    //         7700: "https://canto.evm.chandrastation.com",
+    //     },
+    //     bridge: "https://bridge.walletconnet.org"
+    // });
+    //     await provider.enable();
+    //     const web3Provider = new providers.Web3Provider(provider);
+    // }
     return (
         <header className="navbar">
             <div className="container-fluid">
                 <div className="header-left">
-                    <a href="http://explain.forteswap.xyz/">
+                    <a href="https://explain.forteswap.xyz/">
                         <img src={logo} width="152" height="60" alt="logo"/>
                     </a>
                 </div>
                 <div className="header-center text-center">
-
+                    <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <li className="nav-item" role="presentation">
+                            <Link className={location.pathname === "/" ? `nav-link active` : 'nav-link'} id="pills-home-tab" data-bs-toggle="pill"
+                                  to={'/'} type="button" role="tab" aria-controls="pills-home"
+                                  aria-selected="true">swap
+                            </Link>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <Link className={location.pathname === "/pool" ? `nav-link active` : 'nav-link'} id="pills-profile-tab" data-bs-toggle="pill"
+                                  to={'/pool'} type="button" role="tab"
+                                  aria-controls="pills-profile" aria-selected="false">pool
+                            </Link>
+                        </li>
+                    </ul>
                 </div>
                 <div className="header-right">
                     <div className="navbar navbar-default clearfix">

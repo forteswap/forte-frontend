@@ -7,7 +7,7 @@ import {useGlobalModalContext} from "./GlobalModal";
 const TransactionSuccessModal = (props) => {
     const { hideModal, store } = useGlobalModalContext();
     const { modalProps } = store || {};
-    const { hash, title } = modalProps || {};
+    const { hash, title, isSwap } = modalProps || {};
     const navigate = useNavigate();
 
     const toggleIsOpenModal = () => {
@@ -15,6 +15,11 @@ const TransactionSuccessModal = (props) => {
     };
 
     const poolIndex = () => {
+        navigate('/pool');
+        hideModal();
+    }
+
+    const swapIndex = () => {
         navigate('/');
         hideModal();
     }
@@ -42,9 +47,15 @@ const TransactionSuccessModal = (props) => {
                     </Row>
                 </ModalBody>
                 <ModalFooter className="with-bg full-btn">
-                    <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
-                        Return to Pools
-                    </Button>
+                    {isSwap ?
+                        <Button onClick={swapIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Swap
+                        </Button>
+                        :
+                        <Button onClick={poolIndex} color="none" className="btn-starch btn btn-lg">
+                            Return to Pools
+                        </Button>
+                    }
                 </ModalFooter>
             </Modal>
         </>
