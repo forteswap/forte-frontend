@@ -399,7 +399,7 @@ const Add = (props) => {
                                     <Col sm={12}>
                                         <div className="d-flex my-2">
                                             {(crypto1 && !isToken1Approved) ?
-                                                <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
+                                                <button className="btn btn-primary flex-grow-1 me-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(1)}>
                                                     <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto1.icon)}
@@ -410,7 +410,7 @@ const Add = (props) => {
                                                 : null}
 
                                             {(crypto2 && !isToken2Approved) ?
-                                                <button className="btn btn-primary flex-grow-1 ms-1 pe-4 min-h-50"
+                                                <button className="btn btn-primary flex-grow-1 ms-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(2)}>
                                                     <img className="align-middle float-start coin-img" height="28"
                                                          src={require("../../../assets/images/coins/" + crypto2.icon)}

@@ -568,3 +568,8 @@ body.dark-mode .wallet-card {
 	opacity: 1;
 	transform: translate(3em, 0em) rotate(-15deg);
 }
+
+.btn > img,
+.btn > span {
+	vertical-align: middle;
+}

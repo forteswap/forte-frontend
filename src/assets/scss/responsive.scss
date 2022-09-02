@@ -77,7 +77,7 @@
     width: 1.8em;
   }
   .button-max {
-    padding: 2px 6px;
+    padding: 2px 6px !important;
   }
   .header-right{
     order: 1;
@@ -85,6 +85,9 @@
   .header-center{
     order: 2;
     margin: auto;
+  }
+  .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
+    transform: translate(2.8em, -0.1em) rotate(-15deg);
   }
 }
 /* Large devices (laptops/desktops, 992px and up) */
