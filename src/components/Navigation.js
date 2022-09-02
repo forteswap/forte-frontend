@@ -10,7 +10,6 @@ const themes = {
 };
 
 const Navigation = () => {
-    console.log(localStorage.getItem("forte-theme"))
     let provider = window.ethereum;
     const location = useLocation();
     const [buttonTitle, setButtonTitle] = useState('Connect Metamask');
@@ -38,8 +37,6 @@ const Navigation = () => {
                 await provider.request({method: 'wallet_switchEthereumChain', params: [{chainId: '0x1e14'}]});
                 const accounts = await provider.request({method: 'eth_requestAccounts'});
                 setButtonTitle(accounts[0].slice(0, 6) + '...' + accounts[0].substr(-4))
-                getPoolData().then(() => {
-                });
             } else {
                 if (!showMessage) {
                     displayErrorMessage("Please connect wallet first!");
@@ -52,20 +49,11 @@ const Navigation = () => {
 
     useEffect(() => {
         changeTheme(theme)
-        console.log(theme)
     }, [theme]);
 
     useEffect(() => {
         connect(true).then();
     }, []);
-
-    // const changeMode = (val) => {
-    //     if (val.target.checked) {
-    //
-    //     } else {
-    //         document.getElementById('main-body').classList.remove('dark-mode');
-    //     }
-    // }
 
     const changeTheme = (theme) => {
         setTheme(theme);
@@ -82,22 +70,12 @@ const Navigation = () => {
         }
     }
 
-    // const wConnect = async () => {
-    // const provider = new WalletConnectProvider.default({
-    //     rpc: {
-    //         7700: "https://canto.evm.chandrastation.com",
-    //     },
-    //     bridge: "https://bridge.walletconnet.org"
-    // });
-    //     await provider.enable();
-    //     const web3Provider = new providers.Web3Provider(provider);
-    // }
     return (
         <header className="navbar">
             <div className="container-fluid">
                 <div className="header-left">
                     <a href="https://explain.forteswap.xyz/">
-                        <img src={logo} width="152" height="60" alt="logo"/>
+                        <img src={logo} width="152" height="60" alt="logo" className="logo"/>
                     </a>
                 </div>
                 <div className="header-center text-center">

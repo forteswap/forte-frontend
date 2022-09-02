@@ -67,9 +67,9 @@
 	padding: 1.5rem 1rem;
 	
 	.card-header {
-		padding: 0 1.5rem 1.5rem;
+		padding: 0 1.5rem 0.5rem;
 		position: relative;
-		display: flex;
+		//display: flex;
 		align-items: center;
 		flex-wrap: wrap;
 		justify-content: space-between;
@@ -137,6 +137,11 @@
 	}
 }
 
+.text-justify {
+	text-align: justify;
+	text-justify: inter-word;
+}
+
 .pool {
 	.card {
 		padding: 2rem;
@@ -196,7 +201,6 @@
 	line-height: 41px;
 	width: 0;
 	flex: 1 1 auto;
-	
 }
 
 .form-control:focus {
@@ -210,7 +214,6 @@
 	border-radius: 20px;
 	min-height: 100px;
 	padding: 10px 25px;
-	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin: 5px 0;
@@ -230,7 +233,7 @@
 		background: #D9D9D9;
 		border: 4px solid #FFFFFF;
 		border-radius: 100px;
-		left: 49%;
+		left: 43%;
 		top: -20px;
 		height: 40px;
 		width: 40px;
@@ -472,6 +475,12 @@ body.dark-mode .wallet-card {
 	@extend .fw-normal;
 }
 
+.input-group-text {
+	height: 42px;
+	border-top-right-radius: 100px;
+	border-bottom-right-radius: 100px;
+}
+
 /*Toggle*/
 .theme-setting {
 	cursor: pointer;
@@ -558,4 +567,9 @@ body.dark-mode .wallet-card {
 .toggle-checkbox:checked ~ .toggle-slot .moon-icon-wrapper {
 	opacity: 1;
 	transform: translate(3em, 0em) rotate(-15deg);
+}
+
+.btn > img,
+.btn > span {
+	vertical-align: middle;
 }

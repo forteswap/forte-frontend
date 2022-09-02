@@ -106,19 +106,16 @@ function Index(props) {
                     <p className="text-xs text-primary mb-0">{pair.totalPool.token2 + ' ' + pair.token2Name}</p>
                 </td>
                 <td className="text-center action">
-                    <div className="border-start ms-2">
-                        <Link type="button" className="btn btn-forte btn-success me-3"
-                              to={'/pool/add-liquidity/' + pair.slug}>
-                            <img
-                                src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}
-                                className="align-middle me-1" alt="add"/>
+                    <div className="border-start ps-2 ms-2">
+                        <Link className="btn btn-forte btn-success me-md-3" to={'/pool/add-liquidity/' + pair.slug}>
+                            <img className="align-middle me-1 sm-hidden" alt="add button"
+                                src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}/>
                             <span className="align-middle">Add</span>
                         </Link>
                         {parseFloat(pair.userLpBalance) > 0 ?
-                            <Link className="btn btn-forte btn-danger" to={'/pool/remove-liquidity/' + pair.slug}>
-                                <img
-                                    src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")}
-                                    className="align-middle me-1" alt="remove"/>
+                            <Link className="btn btn-forte btn-danger mt-xs-2" to={'/pool/remove-liquidity/' + pair.slug}>
+                                <img  className="align-middle me-1 sm-hidden" alt="remove button"
+                                    src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")} />
                                 <span className="align-middle">Remove</span>
                             </Link>
                             : ""}
@@ -134,26 +131,30 @@ function Index(props) {
             <Row>
                 <Col>
                     <Card>
-                        <CardHeader
-                            className='flex-md-row flex-column align-md-items-center align-items-start border-bottom'>
-                            <CardTitle tag='h3'>Pools</CardTitle>
-                            <div className='d-flex mt-md-0 mt-1'>
-                                <Link to="/pool/create" className="btn btn-primary wallet-button">Create a Pool</Link>
-                            </div>
+                        <CardHeader className='align-items-center align-items-start border-bottom'>
+                            <Row>
+                                <Col xs={5}>
+                                    <CardTitle tag='h3' className="mt-2">Pools</CardTitle>
+                                </Col>
+                                <Col xs={7}>
+                                    <div className='mt-md-0 float-end'>
+                                        <Link to="/pool/create" className="btn btn-primary wallet-button">Create a Pool</Link>
+                                    </div>
+                                </Col>
+                            </Row>
                         </CardHeader>
-                        <Row className='justify-content-end mx-0 py-3'>
-                            <Col className='align-items-center justify-content-start mt-1' md='6' sm='12'>
-                                <div className="form-check form-switch row">
-                                    <label
-                                        className={"col-lg-3 col-sm-4 col-form-label " + (!isMyPosition ? 'label-selected' : '')}>All
-                                        Positions</label>
-                                    <input className="col-lg-3 col-sm-4 form-check-input cursor-pointer" type="checkbox"
-                                           role="switch"
-                                           onChange={changePosition}/>
-                                    <label
-                                        className={"col-lg-3 col-sm-4 col-form-label " + (isMyPosition ? 'label-selected' : '')}>My
-                                        Positions</label>
-                                </div>
+                        <Row className='mx-0 py-3'>
+                            <Col className='d-flex align-items-center mt-1 form-switch justify-content-center' md='6' sm='12'>
+                                <label className={"me-1 form-label " + (!isMyPosition ? 'label-selected' : '')}>
+                                    All Positions
+                                </label>
+                                <label className="ms-5 me-2 form-label">
+                                    <input className="form-check-input cursor-pointer form-control" type="checkbox"
+                                           role="switch" onChange={changePosition}/>
+                                </label>
+                                <label className={"me-1 form-label " + (isMyPosition ? 'label-selected' : '')}>
+                                    My Positions
+                                </label>
                             </Col>
                             <Col className='d-flex align-items-center justify-content-end mt-1' md='6' sm='12'>
                                 <Input
@@ -166,16 +167,16 @@ function Index(props) {
                                 />
                             </Col>
                         </Row>
-                        <Row className='justify-content-end mx-0 py-3'>
+                        <Row className='justify-content-end mx-0'>
                             <Col md='12' sm='12'>
                                 <Table responsive>
                                     <thead>
                                     <tr>
-                                        <th width="25%">Pair</th>
-                                        <th width="15%" className="text-center">Wallet</th>
-                                        <th width="15%" className="text-center">My Pool Amount</th>
-                                        <th width="20%" className="text-center">Total Pool Amount</th>
-                                        <th width="25%" className="text-center">Add or Remove Liquidity</th>
+                                        <th>Pair</th>
+                                        <th className="text-center">Wallet</th>
+                                        <th className="text-center">My Pool Amount</th>
+                                        <th className="text-center">Total Pool Amount</th>
+                                        <th className="text-center">Add or Remove Liquidity</th>
                                     </tr>
                                     </thead>
                                     <tbody>

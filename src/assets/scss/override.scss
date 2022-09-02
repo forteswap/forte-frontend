@@ -39,7 +39,12 @@ body:not(.dark-mode) {
 	padding-right: 1rem;
 	padding-left: 1rem;
 
-	&.btn-forte-image {
+	&.btn-forte-image{
+		font-size: var(--bs-btn-font-size);
+		font-weight: var(--bs-btn-font-weight);
+		line-height: var(--bs-btn-line-height);
+	}
+	&.btn-approval {
 		font-size: var(--bs-btn-font-size);
 		font-weight: var(--bs-btn-font-weight);
 		line-height: var(--bs-btn-line-height);

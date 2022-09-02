@@ -12,9 +12,9 @@ const fetchPostsSuccess = data => ({
 })
 
 function assignTokenPrice(address){
-    if(address === "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd"){
+    if(address === cryptoCoinsEnum.usdc.address || address === cryptoCoinsEnum.note.address){
         return 1;
-    } else if (address === "0x826551890Dc65655a0Aceca109aB11AbDbD7a07B"){
+    } else if (address === cryptoCoinsEnum.wcanto.address){
         return 0.30;
     } else return 0;
 

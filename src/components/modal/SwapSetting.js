@@ -45,10 +45,10 @@ const SwapSetting = (props) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col sm={2}>
+                        <Col xs={3} md={2}>
                             <button className="btn btn-forte-image py-2 px-3 ms-auto" onClick={setAutoSlippage}>Auto</button>
                         </Col>
-                        <Col sm={10}>
+                        <Col xs={9} md={10}>
                             <div className="input-group mb-3">
                                 <Input type="text" className="form-control with-bg text-end"  placeholder="2" defaultValue={formTempSlippage}
                                        onChange={(val) => setFormTempSlippage(val.target.value)}  value={formTempSlippage}/>
