@@ -64,8 +64,6 @@ function Remove(props) {
         toggleConfirmationWaitingModal();
     }
 
-
-
     const contractInitialize = async () => {
         try {
             let provider = await detectEthereumProvider();
@@ -152,33 +150,38 @@ function Remove(props) {
                             <Row>
                                 <Col sm={12}>
                                     <div className="balance-card">
-                                        <Input autoComplete="off" type="text" onChange={setInputVal("liquidity")}
-                                               pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00"
+                                        <div className="d-flex">
+                                            <Input autoComplete="off" type="text" onChange={setInputVal("liquidity")}
+                                               placeholder="0.00"
                                                value={formData.liquidity}
                                                spellCheck="false" className="form-control-coin"/>
-                                        <div className="text-end">
-                                            <button
-                                                className="btn btn-forte-image align-items-center d-flex py-2 px-3 ms-auto">
-                                                <div className="coin-group me-2">
-                                                    <div className="coin pull-up">
-                                                        <img alt="coinImg" height="35" width="35"
-                                                             src={require("../../../assets/images/coins/" + crypto1.icon)}/>
+
+                                            <div className="text-end">
+                                                <button
+                                                    className="btn btn-forte-image align-items-center d-flex py-md-2 px-md-3 ms-auto">
+                                                    <div className="coin-group me-2">
+                                                        <div className="coin pull-up">
+                                                            <img alt="coinImg" height="35" width="35" className="coin-icon"
+                                                                 src={require("../../../assets/images/coins/" + crypto1.icon)}/>
+                                                        </div>
+                                                        <div className="coin pull-up">
+                                                            <img alt="coinImg" height="35" width="35" className="coin-icon"
+                                                                 src={require("../../../assets/images/coins/" + crypto2.icon)}/>
+                                                        </div>
                                                     </div>
-                                                    <div className="coin pull-up">
-                                                        <img alt="coinImg" height="35" width="35"
-                                                             src={require("../../../assets/images/coins/" + crypto2.icon)}/>
-                                                    </div>
-                                                </div>
-                                                <span
-                                                    className="align-middle"> {crypto1.name + '/' + crypto2.name} </span>
-                                            </button>
-                                            <div className="mt-2">
-                                                <span className="text-balance">Balance: {currentPool.userLpBalance} LP Tokens</span>
-                                                <button className="btn button-max btn-sm ms-2"
-                                                        onClick={setLiquidityMax}>
-                                                    Max
+                                                    <span
+                                                        className="align-middle"> {crypto1.name + '/' + crypto2.name} </span>
                                                 </button>
                                             </div>
+                                        </div>
+                                        <div className="mt-2 text-end">
+                                            <span className="text-balance">
+                                                Balance: {currentPool.userLpBalance} LP Tokens
+                                            </span>
+                                            <button className="btn button-max btn-sm ms-2"
+                                                    onClick={setLiquidityMax}>
+                                                Max
+                                            </button>
                                         </div>
                                     </div>
                                 </Col>
@@ -186,11 +189,13 @@ function Remove(props) {
                             <Row>
                                 <Col sm={12}>
                                     <div className="balance-card d-block">
-                                        <Row className={"mt-4 pb-3 border-bottom d-flex text-center "}>
-                                            <Col md={12} className={"pb-3 d-flex"}>
+                                        <Row className={"pb-md-3 d-flex text-center"}>
+                                            <Col md={12} className={"d-flex"}>
                                                 <h5 className="pe-3">Preview</h5>
                                                 <span>Your Position</span>
                                             </Col>
+                                        </Row>
+                                        <Row className="sm-hidden border-bottom pb-4">
                                             <Col md={4}>
                                                 <div className="coin-group text-center pe-2 d-block">
                                                     <div className="coin pull-up">
@@ -204,31 +209,41 @@ function Remove(props) {
                                                 </div>
                                             </Col>
                                             <Col md={4} className="border-start border-end">
-                                                <h6>{crypto1.name + '/' + crypto2.name}  </h6>
+                                                <div className="text-center">
+                                                    <h6>{crypto1.name + '/' + crypto2.name}  </h6>
+                                                </div>
                                             </Col>
                                             <Col md={4}>
-                                                <h6>0.288</h6>
+                                                <div className="text-center">
+                                                    <h6>0.288</h6>
+                                                </div>
                                             </Col>
                                         </Row>
-                                        <Row className="mt-4 pb-3 text-center">
-                                            <Col md={4}>
-                                                <h6>{currentPool.myPool.token1}</h6>
-                                                <p className={"mb-0"}>{crypto1.name}</p>
+                                        <Row className="pt-4">
+                                            <Col xs={4}>
+                                                <div className="text-center">
+                                                    <span className="title">{currentPool.myPool.token1}</span>
+                                                    <p className={"mb-0"}>{crypto1.name}</p>
+                                                </div>
                                             </Col>
-                                            <Col md={4} className=" border-start border-end">
-                                                <h6>{currentPool.myPool.token2}</h6>
-                                                <p className={"mb-0"}>{crypto2.name}</p>
+                                            <Col xs={4} className="border-start border-end">
+                                                <div className="text-center">
+                                                    <span className="title">{currentPool.myPool.token2}</span>
+                                                    <p className={"mb-0"}>{crypto2.name}</p>
+                                                </div>
                                             </Col>
-                                            <Col md={4}>
-                                                <h6>{(currentPool.share)} %</h6>
-                                                <p className={"mb-0"}>Share of Pool </p>
+                                            <Col xs={4}>
+                                                <div className="text-center">
+                                                    <span className="title">{(currentPool.share)} %</span>
+                                                    <p className={"mb-0"}>Share of Pool </p>
+                                                </div>
                                             </Col>
                                         </Row>
                                     </div>
                                 </Col>
-                                <Col sm={12} className={"mt-5"}>
+                                <Col sm={12}>
                                     <button onClick={togglePreviewModal}
-                                            className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6">
+                                            className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6  mt-3 btn-submit">
                                         Withdraw
                                     </button>
                                 </Col>

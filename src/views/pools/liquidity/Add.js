@@ -300,7 +300,7 @@ const Add = (props) => {
 
                                     ) : ""}
                                 </div>
-                                <p className="mt-4 card-text">
+                                <p className="mt-4 card-text text-justify">
                                     When you add liquidity, you will receive pool tokens representing your position.
                                     These tokens automatically earn proportional to your share of the pool and can be
                                     redeemed at any time.
@@ -310,26 +310,30 @@ const Add = (props) => {
                                 <Row>
                                     <Col sm={12}>
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
                                                    value={formData.amountADesired}
                                                    onChange={setInputVal("amountADesired")}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00"
+                                                   placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin" ref={token1Input}/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto">
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../../assets/images/coins/" + crypto1.icon)}
-                                                         alt="coinImg"/>
-                                                    <span className="align-middle ps-2 pe-4"> {crypto1.name}</span>
-                                                </button>
-                                                <div className="mt-2">
-                                                    <span
-                                                        className="text-balance">Balance: {token1Balance + ' ' + crypto1.name}</span>
-                                                    <button className="btn button-max btn-sm ms-2"
-                                                            onClick={() => setToken1Max(token1Balance)}>
-                                                        Max
+
+                                                <div className="text-end">
+                                                    <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto">
+                                                        <img className="align-middle float-start coin-icon" height="28"
+                                                             src={require("../../../assets/images/coins/" + crypto1.icon)}
+                                                             alt="coinImg"/>
+                                                        <span className="align-middle px-1"> {crypto1.name}</span>
                                                     </button>
                                                 </div>
+                                            </div>
+                                            <div className="text-end">
+                                                <span className="text-balance">
+                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                </span>
+                                                <button className="btn button-max btn-sm ms-2"
+                                                        onClick={() => setToken1Max(token1Balance)}>
+                                                    Max
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="balance-card-swapper">
@@ -338,50 +342,62 @@ const Add = (props) => {
                                             </div>
                                         </div>
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
                                                    value={formData.amountBDesired}
                                                    onChange={setInputVal("amountBDesired")}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00" max={token2Balance}
+                                                   placeholder="0.00" max={token2Balance}
                                                    spellCheck="false" className="form-control-coin" ref={token2Input}/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto">
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../../assets/images/coins/" + crypto2.icon)}
-                                                         alt="coinImg"/>
-                                                    <span className="align-middle ps-2 pe-4"> {crypto2.name}</span>
-                                                </button>
-                                                <div className="mt-2">
-                                                    <span
-                                                        className="text-balance">Balance: {token2Balance + ' ' + crypto2.name}</span>
-                                                    <button className="btn button-max btn-sm ms-2"
-                                                            onClick={() => setToken2Max(token2Balance)}>
-                                                        Max
+
+                                                <div className="text-end">
+                                                    <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto">
+                                                        <img className="align-middle float-start coin-icon" height="28"
+                                                             src={require("../../../assets/images/coins/" + crypto2.icon)}
+                                                             alt="coinImg"/>
+                                                        <span className="align-middle ps-2 pe-4"> {crypto2.name}</span>
                                                     </button>
                                                 </div>
                                             </div>
+                                            <div className="text-end">
+                                                <span className="text-balance">
+                                                    Balance: {token2Balance + ' ' + crypto2.name}
+                                                </span>
+                                                <button className="btn button-max btn-sm ms-2"
+                                                        onClick={() => setToken2Max(token2Balance)}>
+                                                    Max
+                                                </button>
+                                            </div>
                                         </div>
                                     </Col>
+                                </Row>
+                                <Row>
                                     <Col sm={12} className="mt-4">
                                         <p className="text-primary">Initial Prices and Pool Share</p>
                                     </Col>
-                                    <Col sm={12} className="mt-4 price-info">
-                                        <div className="d-flex justify-content-evenly">
-                                            <div className="text-center flex-grow-1">
-                                                <span className="title">--</span>
-                                                <p className="mb-0 sub-title">{crypto1.name}</p>
-                                            </div>
-                                            <div className="text-center border-start border-end flex-grow-1">
-                                                <span className="title">--</span>
-                                                <p className="mb-0 sub-title">{crypto2.name}</p>
-                                            </div>
-                                            <div className="text-center flex-grow-1">
-                                                <span className="title">--</span>
-                                                <p className="mb-0 sub-title">Share of Pool </p>
-                                            </div>
+                                </Row>
+                                <Row>
+                                    <Col xs={4}>
+                                        <div className="text-center">
+                                            <span className="title">--</span>
+                                            <p className="mb-0 sub-title">{crypto1.name}</p>
                                         </div>
                                     </Col>
-                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "m-5" : "mb-5" }>
-                                        <div className="d-flex">
+                                    <Col xs={4} className="border-start border-end">
+                                        <div className="text-center">
+                                            <span className="title">--</span>
+                                            <p className="mb-0 sub-title">{crypto2.name}</p>
+                                        </div>
+                                    </Col>
+                                    <Col xs={4}>
+                                        <div className="text-center">
+                                            <span className="title">--</span>
+                                            <p className="mb-0 sub-title">Share of Pool </p>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm={12}>
+                                        <div className="d-flex my-2">
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(1)}>
@@ -408,7 +424,7 @@ const Add = (props) => {
                                     <Col sm={12}>
                                         <button onClick={togglePreviewModal}
                                                 disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center` py-4` btn-starch fs-6">
+                                                className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 btn-submit">
                                             Add
                                         </button>
                                     </Col>

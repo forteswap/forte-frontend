@@ -30,6 +30,7 @@ import {
 import detectEthereumProvider from "@metamask/detect-provider";
 import {ethers} from "ethers";
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {Link} from "react-router-dom";
 
 const Index = () => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts, button;
@@ -208,11 +209,11 @@ const Index = () => {
 
     const submitButton = () => {
         if(token1.length <= 0  || token2.length <= 0 ){
-            button = <button className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
+            button = <button className="btn btn-lg btn-primary align-items-center btn-starch fs-6 py-md-4 mt-md-3 btn-submit">
                 Select Token
             </button>
         }  else {
-            button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
+            button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
                 Swap In
             </button>
         }
@@ -351,62 +352,65 @@ const Index = () => {
 
     return (
         <>
-            <Container className="mt-5">
+            <Container>
                 <Row className="justify-content-center">
                     <Col lg={6}>
                         <Card>
-                            <CardHeader className="d-block">
+                            <CardHeader className='align-items-center align-items-start border-bottom'>
                                 <Row>
-                                    <Col sm="8">
-                                        <CardTitle tag='h3' className="flex-grow-0">Swap</CardTitle>
+                                    <Col xs={8}>
+                                        <CardTitle tag='h3' className="mt-2">Swap</CardTitle>
                                     </Col>
-                                    <Col sm="4">
-                                        <div className="float-end">
-                                            <span onClick={toggleSettingModal} className="cursor-pointer">
-                                                <img className="align-middle" src={settingImg} alt="info" height="20" width="20"/>
-                                            </span>
+                                    <Col xs={4}>
+                                        <div className='d-flex mt-2 float-end'>
+                                           <span onClick={toggleSettingModal} className="cursor-pointer">
+                                              <img className="align-middle" src={settingImg} alt="info" height="25" width="25"/>
+                                           </span>
                                         </div>
                                     </Col>
                                 </Row>
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                    <Col sm={12}>
+                                    <Col sm={12} >
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
                                                    value={formData.from}
                                                    onChange={(val) => setInputVal("from",val.target.value)}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00"
+                                                   placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin"/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto"
-                                                        onClick={toggleCryptoModal1}>
-                                                    {
-                                                        crypto1 ?
-                                                            <>
-                                                                <img className="align-middle float-start" height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                                     alt="coinImg"/>
-                                                                <span
-                                                                    className="align-middle px-2"> {crypto1.name}</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                            : <>
-                                                                <span className="align-middle px-2">Select a Token</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                    }
-                                                </button>
-                                                <div className="mt-2">
-                                                    <span
-                                                        className="text-balance">Balance: {token1Balance + ' ' + crypto1.name}</span>
-                                                    <button className="btn btn-outline-light btn-sm ms-2 fw-normal"
-                                                            onClick={() => setInputVal("from",token1Balance)}>
-                                                        Max
+
+                                                <div className="text-end">
+                                                    <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
+                                                            onClick={toggleCryptoModal1}>
+                                                        {
+                                                            crypto1 ?
+                                                                <>
+                                                                    <img className="align-middle float-start coin-icon" height="28"
+                                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
+                                                                         alt="coinImg"/>
+                                                                    <span className="align-middle px-1"> {crypto1.name}</span>
+                                                                    <img className="align-middle pe-md-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                                : <>
+                                                                    <span className="align-middle px-2">Select Token</span>
+                                                                    <img className="align-middle pe-md-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                        }
                                                     </button>
                                                 </div>
+                                            </div>
+                                            <div className="text-end">
+                                                <span className="text-balance">
+                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                </span>
+                                                <button className="btn btn-outline-light btn-sm ms-2 fw-normal button-max"
+                                                        onClick={() => setInputVal("from",token1Balance)}>
+                                                    Max
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="balance-card-swapper">
@@ -415,44 +419,47 @@ const Index = () => {
                                             </div>
                                         </div>
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
                                                    value={formData.to} readOnly
                                                    onChange={(val) => setInputVal("to",val.target.value)}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00"
+                                                   placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin"/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto"
-                                                        onClick={toggleCryptoModal2}>
-                                                    {
-                                                        crypto2 !== null ?
-                                                            <>
-                                                                <img className="align-middle float-start" height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                                     alt="coinImg"/>
-                                                                <span
-                                                                    className="align-middle ps-2 pe-2"> {crypto2.name}</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                            : <>
-                                                                <span className="align-middle ps-2 pe-2">Select a Token</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                    }
-                                                </button>
-                                                {
-                                                    crypto2 ?
-                                                        <div className="mt-2">
-                                                            <span
-                                                                className="text-balance">Balance: {token2Balance + ' ' + crypto2.name}</span>
-                                                        </div>
-                                                        : ""}
+
+                                                <div className="text-end">
+                                                    <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
+                                                            onClick={toggleCryptoModal2}>
+                                                        {
+                                                            crypto2 !== null ?
+                                                                <>
+                                                                    <img className="align-middle float-start" height="28"
+                                                                         src={require("../../assets/images/coins/" + crypto2.icon)}
+                                                                         alt="coinImg"/>
+                                                                    <span className="align-middle ps-2 pe-2"> {crypto2.name}</span>
+                                                                    <img className="align-middle pe-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                                : <>
+                                                                    <span className="align-middle px-2  ">Select Token</span>
+                                                                    <img className="align-middle pe-md-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                        }
+                                                    </button>
+                                                </div>
                                             </div>
+                                            {
+                                                crypto2 ?
+                                                    <div className="text-end">
+                                                        <span className="text-balance">
+                                                            Balance: {token2Balance + ' ' + crypto2.name}
+                                                        </span>
+                                                    </div> : ""
+                                            }
                                         </div>
                                     </Col>
-                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "mt-3" : "mb-3" }>
-                                        <div className="d-flex">
+                                    <Col sm={12}>
+                                        <div className="d-flex my-2">
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(1)}>
@@ -513,7 +520,7 @@ const Index = () => {
                                         </div>
                                         <Col sm={12}>
                                             <div className="balance-card-group">
-                                                <div className="balance-card">
+                                                <div className="balance-card d-flex">
                                                     <span className="align-middle coin-value">{formData.from}</span>
                                                     <div className="text-end">
                                                         <div className="align-items-center px-3">
@@ -530,7 +537,7 @@ const Index = () => {
                                                     </div>
                                                     <div className="separator"/>
                                                 </div>
-                                                <div className="balance-card">
+                                                <div className="balance-card d-flex">
                                                     <span className="align-middle coin-value">{formData.to}</span>
                                                     <div className="text-end">
                                                         <div className="align-items-center px-3">

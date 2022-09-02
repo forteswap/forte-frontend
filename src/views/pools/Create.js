@@ -188,13 +188,10 @@ const Create = () => {
         waitForConfirmation();
         await contractInitialize();
         const deadline = Math.round(new Date(new Date().getTime() + deadlineMinutes * 60000) / 1000);
-
         const parsedAmountADesired = roundDownAndParse(formData.amountADesired,crypto1.decimal);
         const parsedAmountBDesired = roundDownAndParse(formData.amountBDesired,crypto2.decimal);
 
-
         if (crypto1.name === 'WCANTO') {
-
             contract.connect(signer).addLiquidityCANTO(
                 token2,
                 isStable,
@@ -262,6 +259,7 @@ const Create = () => {
             console.log(err);
         });
     }
+
     return (
         <>
             <Container className="mt-5">
@@ -269,73 +267,83 @@ const Create = () => {
                     <Col lg={6}>
                         <Card>
                             <CardHeader>
-                                <div className="d-flex w-100">
-                                    <Link to={"/pool"} className="me-3">
-                                        <img src={leftArrowImage} className="align-middle flex-grow-0 me-1" alt="back"/>
-                                    </Link>
-                                    <CardTitle tag='h3' className="flex-grow-0">Create a Pool</CardTitle>
-                                    {((crypto1 != null && crypto1.name === 'WCANTO') || (crypto2 != null && crypto2.name === 'WCANTO')) ? (
-
-                                        <div className="flex-grow-1">
-                                            <div className="form-check float-end">
-                                                <input className="form-check-input" id="nativeCantoCheckbox"
-                                                       type="checkbox" onChange={handleCheckbox}/>
-                                                <label htmlFor="nativeCantoCheckbox" className="col-form-label pt-0">Supply
-                                                    Native Canto</label>
-                                            </div>
-                                        </div>
-
-                                    ) : ""}
-                                </div>
+                                <Row>
+                                    <Col md={7} sm={7} xs={12} className="d-flex">
+                                        <Link to={"/pool"} className="me-3">
+                                            <img src={leftArrowImage} className="align-middle flex-grow-0 me-1" alt="back"/>
+                                        </Link>
+                                        <CardTitle tag='h3' className="flex-grow-0">Create a Pool</CardTitle>
+                                    </Col>
+                                        {((crypto1 != null && crypto1.name === 'WCANTO') || (crypto2 != null && crypto2.name === 'WCANTO')) ? (
+                                            <Col md={5} sm={5} xs={12}>
+                                                <div className="form-check float-md-end">
+                                                    <input className="form-check-input" id="nativeCantoCheckbox"
+                                                           type="checkbox" onChange={handleCheckbox}/>
+                                                    <label htmlFor="nativeCantoCheckbox" className="col-form-label pt-0">
+                                                        Supply Native Canto
+                                                    </label>
+                                                </div>
+                                            </Col>
+                                        ) : ""}
+                                </Row>
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                    <div className="form-switch row" style={{ display: 'flex', alignItems: 'center'}}>
-                                        <label
-                                            className={"col-sm-3 col-form-label " + (!isStable ? "label-selected" : "")}>Volatile</label>
-                                        <input className="col-sm-3 form-check-input cursor-pointer" type="checkbox"
-                                               role="switch"
-                                               onChange={changePosition}/>
-                                        <label
-                                            className={"col-sm-3 col-form-label " + (isStable ? "label-selected" : "")}>Stable</label>
-                                    </div>
+                                    <Col className='d-flex align-items-center mt-1 form-switch justify-content-center' md='12' sm='12'>
+                                        <label className={"me-1 form-label " + (!isStable ? 'label-selected' : '')}>
+                                            Volatile
+                                        </label>
+                                        <label className="ms-5 me-2 form-label">
+                                            <input className="form-check-input cursor-pointer form-control" type="checkbox"
+                                                   role="switch" onChange={changePosition}/>
+                                        </label>
+                                        <label className={"me-1 form-label " + (isStable ? 'label-selected' : '')}>
+                                            Stables
+                                        </label>
+                                    </Col>
+                                </Row>
+                                <Row>
                                     <Col sm={12}>
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
-                                                   value={formData.amountADesired}
-                                                   onChange={setInputVal("amountADesired")}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00"
-                                                   spellCheck="false" className="form-control-coin"/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto"
-                                                        onClick={toggleCryptoModal1}>
-                                                    {
-                                                        crypto1 ?
-                                                            <>
-                                                                <img className="align-middle float-start coin-img"
-                                                                     height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                                     alt="coinImg"/>
-                                                                <span
-                                                                    className="align-middle px-2"> {crypto1.name}</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                            : <>
-                                                                <span className="align-middle px-2">Select a Token</span>
-                                                                <img className="align-middle pe-2" height="20"
-                                                                     src={downArrowImage} alt="coinImg"/>
-                                                            </>
-                                                    }
-                                                </button>
-                                                <div className="mt-2">
-                                                    <span
-                                                        className="text-balance">Balance: {token1Balance + ' ' + crypto1.name}</span>
-                                                    <button className="btn button-max btn-sm ms-2"
-                                                            onClick={() => setToken1Max(token1Balance)}>
-                                                        Max
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
+                                                       value={formData.amountADesired}
+                                                       onChange={setInputVal("amountADesired")}
+                                                       placeholder="0.00"
+                                                       spellCheck="false" className="form-control-coin"/>
+                                                <div className="text-end">
+                                                    <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
+                                                            onClick={toggleCryptoModal1}>
+                                                        {
+                                                            crypto1 ?
+                                                                <>
+                                                                    <img className="align-middle float-start coin-icon"
+                                                                         height="28"
+                                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
+                                                                         alt="coinImg"/>
+                                                                    <span className="align-middle px-1">
+                                                                        {crypto1.name}
+                                                                    </span>
+                                                                    <img className="align-middle pe-md-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                                : <>
+                                                                    <span className="align-middle px-2">Select Token</span>
+                                                                    <img className="align-middle pe-md-2" height="20"
+                                                                         src={downArrowImage} alt="coinImg"/>
+                                                                </>
+                                                        }
                                                     </button>
                                                 </div>
+                                            </div>
+                                            <div className="text-end">
+                                                <span className="text-balance">
+                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                </span>
+                                                <button className="btn button-max btn-sm ms-2"
+                                                        onClick={() => setToken1Max(token1Balance)}>
+                                                    Max
+                                                </button>
                                             </div>
                                         </div>
                                         <div className="balance-card-swapper">
@@ -344,69 +352,82 @@ const Create = () => {
                                             </div>
                                         </div>
                                         <div className="balance-card">
-                                            <Input autoComplete="off" type="text"
+                                            <div className="d-flex">
+                                                <Input autoComplete="off" type="text"
                                                    value={formData.amountBDesired}
                                                    onChange={setInputVal("amountBDesired")}
-                                                   pattern="^[0-9]*[.,]?[0-9]*$" placeholder="0.00" max={token2Balance}
+                                                   placeholder="0.00" max={token2Balance}
                                                    spellCheck="false" className="form-control-coin"/>
-                                            <div className="text-end">
-                                                <button className="btn btn-forte-image py-2 px-3 ms-auto"
+                                                <div className="text-end">
+                                                <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
                                                         onClick={toggleCryptoModal2}>
                                                     {
                                                         crypto2 !== null ?
                                                             <>
-                                                                <img className="align-middle float-start coin-img"
+                                                                <img className="align-middle float-start coin-icon"
                                                                      height="28"
                                                                      src={require("../../assets/images/coins/" + crypto2.icon)}
                                                                      alt="coinImg"/>
-                                                                <span
-                                                                    className="align-middle ps-2 pe-2"> {crypto2.name}</span>
-                                                                <img className="align-middle pe-2" height="20"
+                                                                <span className="align-middle ps-2 pe-2">
+                                                                    {crypto2.name}
+                                                                </span>
+                                                                <img className="align-middle pe-md-2" height="20"
                                                                      src={downArrowImage} alt="coinImg"/>
                                                             </>
                                                             : <>
-                                                                <span className="align-middle ps-2 pe-2">Select a Token</span>
+                                                                <span className="align-middle ps-2 pe-2">Select Token</span>
                                                                 <img className="align-middle pe-2" height="20"
                                                                      src={downArrowImage} alt="coinImg"/>
                                                             </>
                                                     }
                                                 </button>
-
+                                            </div>
+                                            </div>
+                                            <div className="text-end">
                                                 {
                                                     crypto2 ?
-                                                        <div className="mt-2">
-                                                            <span
-                                                                className="text-balance">Balance: {token2Balance + ' ' + crypto2.name}</span>
+                                                        <div>
+                                                            <span className="text-balance">
+                                                                Balance: {token2Balance + ' ' + crypto2.name}
+                                                            </span>
                                                             <button onClick={() => setToken2Max(token2Balance)}
                                                                     className="btn button-max btn-sm ms-2">
                                                                 Max
                                                             </button>
-                                                        </div>
-                                                        : ""}
+                                                        </div> : ""
+                                                }
                                             </div>
                                         </div>
                                     </Col>
+                                </Row>
+                                <Row>
                                     <Col sm={12} className="mt-4">
                                         <p>Initial Prices and Pool Share</p>
                                     </Col>
-                                    <Col sm={12} className="mt-4 price-info">
-                                        <div className="d-flex justify-content-evenly">
-                                            <div className="text-center flex-grow-1">
-                                                <span className="title">{formData.amountADesired || '-'}</span>
-                                                <p className="mb-0 sub-title">{crypto1 ? crypto1.name : '-'}</p>
-                                            </div>
-                                            <div className="text-center border-start border-end flex-grow-1">
-                                                <span className="title">{formData.amountBDesired || '-'}</span>
-                                                <p className="mb-0 sub-title">{crypto2 ? crypto2.name : '-'}</p>
-                                            </div>
-                                            <div className="text-center flex-grow-1">
-                                                <span className="title">100%</span>
-                                                <p className="mb-0 sub-title">Share of Pool </p>
-                                            </div>
+                                </Row>
+                                <Row>
+                                    <Col xs={4}>
+                                        <div className="text-center">
+                                            <span className="title">{formData.amountADesired || '-'}</span>
+                                            <p className="mb-0 sub-title">{crypto1 ? crypto1.name : '-'}</p>
                                         </div>
                                     </Col>
-                                    <Col sm={12} className={(!isToken1Approved || !isToken2Approved) ? "mt-3" : "mb-3" }>
-                                        <div className="d-flex">
+                                    <Col xs={4} className="border-start border-end">
+                                        <div className="text-center">
+                                            <span className="title">{formData.amountBDesired || '-'}</span>
+                                            <p className="mb-0 sub-title">{crypto2 ? crypto2.name : '-'}</p>
+                                        </div>
+                                    </Col>
+                                    <Col xs={4}>
+                                        <div className="text-center">
+                                            <span className="title">100%</span>
+                                            <p className="mb-0 sub-title">Share of Pool </p>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm={12}>
+                                        <div className="d-flex my-2">
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 min-h-50"
                                                         onClick={() => tokenApproval(1)}>
@@ -433,7 +454,7 @@ const Create = () => {
                                     <Col sm={12}>
                                         <button onClick={togglePreviewModal}
                                                 disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center py-4 btn-starch fs-6 mt-3">
+                                                className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 mt-3 btn-submit">
                                             Add
                                         </button>
                                     </Col>
