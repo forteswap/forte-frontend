@@ -171,7 +171,7 @@ function Index(props) {
                             <span className="align-middle">Add</span>
                         </Link>
                         { parseFloat(pair.userLpBalance) > 0 ?
-                            <Link className="btn btn-forte btn-danger mt-xs-2" to={'/pool/remove-liquidity/' + pair.slug}>
+                            <Link className="btn btn-forte btn-danger mt-xs-2 me-md-3" to={'/pool/remove-liquidity/' + pair.slug}>
                                 <img  className="align-middle me-1 sm-hidden" alt="remove button"
                                     src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")} />
                                 <span className="align-middle">Remove</span>
@@ -179,7 +179,7 @@ function Index(props) {
                             : ""}
                         { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
                             <button className="btn btn-primary mt-xs-2" onClick={() => selectRewardPair(pair)} >
-                                <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} />
+                                <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} height="16" width="16" />
                                 <span className="align-middle">Claim Rewards</span>
                             </button>
                             : ""}
