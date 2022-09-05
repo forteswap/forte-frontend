@@ -1,11 +1,29 @@
-import {Card, CardHeader, CardTitle, Col, Container, Input, Row, Table} from "reactstrap";
+import {
+    Button,
+    Card,
+    CardHeader,
+    CardTitle,
+    Col,
+    Container,
+    Input, Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Row,
+    Table
+} from "reactstrap";
 import loader from '../../assets/images/loader.gif';
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {cryptoCoinsEnum} from "../../staticData";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import {connect} from "react-redux";
-import {getPoolData} from "../../helper";
+import {getNumberValueForTest, getPoolData, getTokenData} from "../../helper";
 import {collect} from "collect.js";
+import claimImage from '../../assets/images/claim.svg';
+import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {ethers} from "ethers";
+import {PAIR_ABI} from "../../config";
+import React from "react";
 
 function Index(props) {
     const [tableData, setTableData] = useState([]);
@@ -18,6 +36,13 @@ function Index(props) {
     const [themeMode] = useState("dark-mode");
     const [allItemPage, setAllItemPage] = useState(10);
     const [myItemPage, setMyItemPage] = useState(10);
+    const [selectedPair, setSelectedPair] = useState({claim : { token1: "",token2: ""}, pairAddress: ""});
+    const [rewardModal, setRewardModal] = useState(false);
+    const toggleRewardModal = () => setRewardModal(!rewardModal);
+    const [crypto1,setCrypto1] = useState(null);
+    const [crypto2,setCrypto2] = useState(null);
+
+    const {showModal} = useGlobalModalContext();
 
     useEffect(() => {
         setTableData(props.data);
@@ -65,6 +90,38 @@ function Index(props) {
         setFilterText('');
     }
 
+    const selectRewardPair = (pair) => {
+        setSelectedPair(pair);
+        setCrypto1(getTokenData(pair.token1Name))
+        setCrypto2(getTokenData(pair.token2Name))
+        setRewardModal(true);
+    }
+
+    const claimReward = async (LpAddress) => {
+        try {
+            setRewardModal(false);
+            showModal(modalTypesEnum.CONFIRMATION_WAITING, {msg: "Claim withdrawing from "+selectedPair.pairName})
+            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = web3Provider.getSigner();
+            const contract = new ethers.Contract(LpAddress, PAIR_ABI, web3Provider);
+            const transaction = await contract.connect(signer).claimFees();
+            transaction.wait();
+            if(transaction.hash){
+                getPoolData().then()
+                showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {
+                    hash: transaction.hash,
+                    title:"You have claimed your token",
+                    hidePoolListMsg: true
+                })
+
+            }else{
+                showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
+            }
+        } catch (e) {
+            showModal(modalTypesEnum.TRANSACTION_FAIL_MODAL);
+        }
+    }
+
     const updateTableList = async (poolList) => {
         let pairList = [];
         for (let pair of poolList) {
@@ -86,8 +143,9 @@ function Index(props) {
                             </div>
                         </div>
                         <div className="d-flex flex-column justify-content-center ps-2">
-                            <h6 className="mb-0 "><a className="pair-title text-decoration-none" target="_blank"
-                                                     href={'https://evm.explorer.canto.io/address/' + pair.pairAddress}>{pair.pairName}</a>
+                            <h6 className="mb-0 ">
+                                <a className="pair-title text-decoration-none" target="_blank" rel="noreferrer"
+                                   href={'https://evm.explorer.canto.io/address/' + pair.pairAddress}>{pair.pairName}</a>
                             </h6>
                             <p className="text-xs text-secondary mb-0">{pair.isStable ? "Stable" : "Volatile"} Pool</p>
                         </div>
@@ -112,12 +170,18 @@ function Index(props) {
                                 src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}/>
                             <span className="align-middle">Add</span>
                         </Link>
-                        {parseFloat(pair.userLpBalance) > 0 ?
+                        { parseFloat(pair.userLpBalance) > 0 ?
                             <Link className="btn btn-forte btn-danger mt-xs-2" to={'/pool/remove-liquidity/' + pair.slug}>
                                 <img  className="align-middle me-1 sm-hidden" alt="remove button"
                                     src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")} />
                                 <span className="align-middle">Remove</span>
                             </Link>
+                            : ""}
+                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
+                            <button className="btn btn-primary mt-xs-2" onClick={() => selectRewardPair(pair)} >
+                                <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} />
+                                <span className="align-middle">Claim Rewards</span>
+                            </button>
                             : ""}
                     </div>
                 </td>
@@ -214,6 +278,51 @@ function Index(props) {
                     </Card>
                 </Col>
             </Row>
+
+            <Modal isOpen={rewardModal} backdrop={true} keyboard={false} centered={true}>
+                <ModalHeader toggle={toggleRewardModal}>Claim Rewards</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col sm={12}>
+                            { crypto1 && crypto2 ?
+                                <div className="balance-card-group">
+                                    <div className="balance-card">
+                                        <span className="align-middle coin-value">
+                                            { selectedPair ? getNumberValueForTest(selectedPair.claim.token1,crypto1.decimal) : "" }
+                                        </span>
+                                        <div className="text-end">
+                                            <div className="align-items-center px-3">
+                                                <img className="me-2 align-middle coin-img" alt="coinImg"
+                                                     src={require("../../assets/images/coins/" + crypto1.icon)}
+                                                     height="30" width="30"/>
+                                                <span className="align-middle coin-symbol">{crypto1.name}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="balance-card">
+                                        <span className="align-middle coin-value">
+                                            {getNumberValueForTest(selectedPair.claim.token2,crypto2.decimal)}
+                                        </span>
+                                        <div className="text-end">
+                                            <div className="align-items-center px-3">
+                                                <img className="me-2 align-middle coin-img" alt="coinImg"
+                                                     src={require("../../assets/images/coins/" + crypto2.icon)}
+                                                     height="30" width="30"/>
+                                                <span className="align-middle coin-symbol">{crypto2.name}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                : ""}
+                        </Col>
+                    </Row>
+                </ModalBody>
+                <ModalFooter className="with-bg full-btn">
+                    <Button color="none" className="btn-starch btn btn-lg" onClick={() => claimReward(selectedPair.pairAddress)}>
+                        Claim
+                    </Button>
+                </ModalFooter>
+            </Modal>
         </Container>
     );
 }

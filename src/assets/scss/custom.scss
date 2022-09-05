@@ -573,3 +573,16 @@ body.dark-mode .wallet-card {
 .btn > span {
 	vertical-align: middle;
 }
+
+.modal-body .balance-card {
+	display: flex;
+}
+
+.modal-body .balance-card-group .balance-card .coin-symbol {
+	font-size: 16px;
+}
+
+.modal-body .coin-img{
+	height: 25px;
+	width: 25px;
+}

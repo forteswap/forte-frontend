@@ -85,3 +85,4 @@ export const getTokenData = (token) => {
 export const getDeadline = (minutes = DEADLINE_MINUTES) => {
     return Math.round(new Date(new Date().getTime() + minutes * 60000) / 1000);
 }
+
