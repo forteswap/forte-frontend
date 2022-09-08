@@ -104,7 +104,7 @@ const Navigation = () => {
                                     <li>
                                         <div className="form-check form-switch float-end">
                                             <label className="theme-setting">
-                                                <input className='toggle-checkbox' type='checkbox' checked={darkMode} onClick={() => {
+                                                <input className='toggle-checkbox' type='checkbox' checked={darkMode} onChange={() => {
                                                     setDarkMode(!darkMode);
                                                     setTheme(darkMode ? themes.light : themes.dark);
                                                 }} />

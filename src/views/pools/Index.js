@@ -127,7 +127,7 @@ function Index(props) {
         for (let pair of poolList) {
             const icon1 = Object.keys(cryptoCoinsEnum).includes(pair.token1Name) ? cryptoCoinsEnum[pair.token1Name].icon : "question.png";
             const icon2 = Object.keys(cryptoCoinsEnum).includes(pair.token2Name) ? cryptoCoinsEnum[pair.token2Name].icon : "question.png";
-
+            const rewardButtonClass =  (parseFloat(pair.userLpBalance) > 0) ? "claim-button-1" : "";
             pairList.push(<tr key={pair.pairAddress}>
 
                 <td>
@@ -165,7 +165,7 @@ function Index(props) {
                 </td>
                 <td className="text-center action">
                     <div className="border-start ps-2 ms-2">
-                        <Link className="btn btn-forte btn-success me-md-3" to={'/pool/add-liquidity/' + pair.slug}>
+                        <Link className="btn btn-forte btn-success me-md-3 mt-xs-2" to={'/pool/add-liquidity/' + pair.slug}>
                             <img className="align-middle me-1 sm-hidden" alt="add button"
                                 src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}/>
                             <span className="align-middle">Add</span>
@@ -177,8 +177,8 @@ function Index(props) {
                                 <span className="align-middle">Remove</span>
                             </Link>
                             : ""}
-                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
-                            <button className="btn btn-primary mt-xs-2" onClick={() => selectRewardPair(pair)} >
+                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) >= 0) ?
+                            <button className={"btn btn-primary mt-xs-2 claim-button " + rewardButtonClass} onClick={() => selectRewardPair(pair)} >
                                 <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} height="16" width="16" />
                                 <span className="align-middle">Claim Rewards</span>
                             </button>
