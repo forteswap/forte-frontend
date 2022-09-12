@@ -17,7 +17,7 @@ import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import {connect} from "react-redux";
-import {getNumberValueForTest, getPoolData, getTokenData} from "../../helper";
+import {getPoolData, getTokenData, roundDownForSwap} from "../../helper";
 import {collect} from "collect.js";
 import claimImage from '../../assets/images/claim.svg';
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
@@ -177,7 +177,7 @@ function Index(props) {
                                 <span className="align-middle">Remove</span>
                             </Link>
                             : ""}
-                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) >= 0) ?
+                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
                             <button className={"btn btn-primary mt-xs-2 claim-button " + rewardButtonClass} onClick={() => selectRewardPair(pair)} >
                                 <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} height="16" width="16" />
                                 <span className="align-middle">Claim Rewards</span>
@@ -208,7 +208,7 @@ function Index(props) {
                             </Row>
                         </CardHeader>
                         <Row className='mx-0 py-3'>
-                            <Col className='d-flex align-items-center mt-1 form-switch justify-content-center' md='6' sm='12'>
+                            <Col className='d-flex align-items-center mt-1 form-switch my-position' md='6' sm='12'>
                                 <label className={"me-1 form-label " + (!isMyPosition ? 'label-selected' : '')}>
                                     All Positions
                                 </label>
@@ -288,7 +288,7 @@ function Index(props) {
                                 <div className="balance-card-group">
                                     <div className="balance-card">
                                         <span className="align-middle coin-value">
-                                            { selectedPair ? getNumberValueForTest(selectedPair.claim.token1,crypto1.decimal) : "" }
+                                            { selectedPair ? roundDownForSwap(selectedPair.claim.token1,crypto1.decimal,18) : "" }
                                         </span>
                                         <div className="text-end">
                                             <div className="align-items-center px-3">
@@ -301,7 +301,7 @@ function Index(props) {
                                     </div>
                                     <div className="balance-card">
                                         <span className="align-middle coin-value">
-                                            {getNumberValueForTest(selectedPair.claim.token2,crypto2.decimal)}
+                                            {roundDownForSwap(selectedPair.claim.token2,crypto2.decimal,18)}
                                         </span>
                                         <div className="text-end">
                                             <div className="align-items-center px-3">

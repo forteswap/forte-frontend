@@ -57,12 +57,11 @@ export const roundDown = (number, decimals = 18) => {
     return value.substring(0, index+4);
 }
 
-export const roundDownForSwap = (number, decimals = 18) => {
+export const roundDownForSwap = (number, decimals = 18, displayDecimal = 6) => {
     const value = ethers.utils.formatUnits(number, decimals);
     let index = value.indexOf(".");
-    return value.substring(0, index+6);
+    return value.substring(0, index+displayDecimal);
 }
-
 
 export const roundDownAndParse = (number, decimals = 18) => {
     let index = number.indexOf(".");
