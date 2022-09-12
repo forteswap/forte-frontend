@@ -5,6 +5,7 @@ import TransactionCanceledModal from "./components/modal/TransactionCanceled";
 import SignatureFailModal from "./components/modal/SignatureFail";
 import NetworkErrorModal from "./components/modal/NetworkError";
 import CustomModal from "./components/modal/Custom";
+import ConfirmationWaitingModal from "./components/modal/ConfirmationWaitingModal";
 
 export const cryptoCoinsEnum = {
     canto: {
@@ -106,6 +107,7 @@ export const modalTypesEnum = {
     SIGNATURE_FAIL_MODAL: "SIGNATURE_FAIL_MODAL",
     NETWORK_ERROR_MODAL: "NETWORK_ERROR_MODAL",
     CUSTOM_MODAL: "CUSTOM_MODAL",
+    CONFIRMATION_WAITING: "CONFIRMATION_WAITING",
 };
 
 export const modalComponentsEnum = {
@@ -116,4 +118,5 @@ export const modalComponentsEnum = {
     [modalTypesEnum.SIGNATURE_FAIL_MODAL]: SignatureFailModal,
     [modalTypesEnum.NETWORK_ERROR_MODAL]: NetworkErrorModal,
     [modalTypesEnum.CUSTOM_MODAL]: CustomModal,
+    [modalTypesEnum.CONFIRMATION_WAITING]: ConfirmationWaitingModal
 };

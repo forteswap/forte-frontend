@@ -7,7 +7,7 @@ import {useGlobalModalContext} from "./GlobalModal";
 const TransactionSuccessModal = (props) => {
     const { hideModal, store } = useGlobalModalContext();
     const { modalProps } = store || {};
-    const { hash, title, isSwap } = modalProps || {};
+    const { hash, title, isSwap, hidePoolListMsg } = modalProps || {};
     const navigate = useNavigate();
 
     const toggleIsOpenModal = () => {
@@ -36,9 +36,11 @@ const TransactionSuccessModal = (props) => {
                                 Congrats! <br/>{title || "You have added liquidity!"}
                             </div>
                             <hr className="mt-4 "/>
+                            {!hidePoolListMsg ?
                             <p className="mt-3 text-secondary">
                                 Now you can check liquidity from the pool list
                             </p>
+                                :"" }
                             <a className="text-secondary" href={"https://evm.explorer.canto.io/tx/"+ hash}
                                target="_blank" rel="noreferrer">
                                 <b>View on evm.explorer.canto.io</b>

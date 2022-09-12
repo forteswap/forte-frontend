@@ -1,3 +1,4 @@
+
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
 
@@ -17,6 +18,9 @@
   .card .card-header {
     padding: 0 0.5rem 0.5rem;
     margin-bottom: 1rem;
+  }
+  .my-position{
+    justify-content:center;
   }
   .balance-card .form-control {
     padding-left: 0.5rem;
@@ -96,7 +100,27 @@
     margin-left: 6%;
   }
 }
+@media (min-width: 768px) and  (max-width: 1080px) {
+  .claim-button {
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 1081px) and  (max-width: 1282px) {
+  .claim-button-1 {
+    margin-top: 10px;
+  }
+}
+
+
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
 
+}
+@media (max-width: 1399.98px) {
+  .container {
+    padding-right: 35px;
+    padding-left: 30px;
+    max-width: 100% !important;
+  }
 }

@@ -43,9 +43,10 @@ export const fetchPoolData = (pairs) => {
                 const poolSymbol = await poolContract.symbol();
                 const poolTokens = await poolContract.tokens();
                 const isStable = await poolContract.stable();
+                const token1Claim = await poolContract.claimable0(accounts[0]);
+                const token2Claim = await poolContract.claimable1(accounts[0]);
                 const token1 = systemTokens.where('address',poolTokens[0]).first();
                 const token2 = systemTokens.where('address',poolTokens[1]).first();
-
 
                 const share = LpBalanceFinal/LpTotalSupplyFinal;
                 const tokenNames = poolSymbol.split('-')[1].split('/');
@@ -101,6 +102,10 @@ export const fetchPoolData = (pairs) => {
                     apr: {
                         token1: sharePer[poolTokens[0]] || 0,
                         token2: sharePer[poolTokens[1]] || 0
+                    },
+                    claim: {
+                        token1: token1Claim.toString(),
+                        token2: token2Claim.toString()
                     },
                     share: (share*100).toFixed(4),
                     userLpBalance: LpBalanceFinal>0 ? getNumberValueForTest(LpBalanceFinal) : getNumberValue(LpBalanceFinal)
