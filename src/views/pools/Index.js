@@ -180,7 +180,7 @@ function Index(props) {
                         { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
                             <button className={"btn btn-primary mt-xs-2 claim-button " + rewardButtonClass} onClick={() => selectRewardPair(pair)} >
                                 <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} height="16" width="16" />
-                                <span className="align-middle">Claim Rewards</span>
+                                <span className="align-middle">Claim Fees</span>
                             </button>
                             : ""}
                     </div>
@@ -319,7 +319,7 @@ function Index(props) {
                 </ModalBody>
                 <ModalFooter className="with-bg full-btn">
                     <Button color="none" className="btn-starch btn btn-lg" onClick={() => claimReward(selectedPair.pairAddress)}>
-                        Claim
+                        Claim Fees
                     </Button>
                 </ModalFooter>
             </Modal>
