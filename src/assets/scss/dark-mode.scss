@@ -29,6 +29,9 @@
 	
 	.table {
 		color: #bebebe;
+		.table-striped tbody tr:nth-of-type(even) {
+			--bs-table-accent-bg: #202123;
+		}
 	}
 	
 	.table td,
@@ -620,5 +623,20 @@
 	
 	.btn-close {
 		background: transparent url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27%23fff%27%3e%3cpath d=%27M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z%27/%3e%3c/svg%3e") center/1em auto no-repeat;
+	}
+	.accordion-item {
+		background-color: #202123;
+	}
+	.accordion-button{
+		background-color: #202123;
+	}
+	.accordion-button:after {
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b4b7bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-up'%3E%3Cpath d='M18 15l-6-6-6 6'/%3E%3C/svg%3E");
+	}
+	.mobile-title{
+		color: #D9D9D9;
+	}
+	.connector{
+		color: var(--forte-dark-primary-text-color) !important;
 	}
 }

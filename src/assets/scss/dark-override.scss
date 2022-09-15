@@ -120,4 +120,9 @@ body.dark-mode {
 	.button-max {
 		@extend .btn-outline-light;
 	}
+
+	.fetching-data {
+		@extend .text-white;
+	}
+
 }

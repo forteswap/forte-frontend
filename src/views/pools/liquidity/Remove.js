@@ -215,7 +215,7 @@ function Remove(props) {
                                             </Col>
                                             <Col md={4}>
                                                 <div className="text-center">
-                                                    <h6>0.288</h6>
+                                                    <h6>-</h6>
                                                 </div>
                                             </Col>
                                         </Row>
@@ -242,10 +242,17 @@ function Remove(props) {
                                     </div>
                                 </Col>
                                 <Col sm={12}>
-                                    <button onClick={togglePreviewModal}
+                                    {formData.liquidity > 0 ?
+                                        <button onClick={togglePreviewModal}
+                                                className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6  mt-3 btn-submit">
+                                            Withdraw
+                                        </button>
+                                        :
+                                        <button
                                             className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6  mt-3 btn-submit">
-                                        Withdraw
-                                    </button>
+                                            Enter Value
+                                        </button>
+                                    }
                                 </Col>
                             </Row>
                         </CardBody>

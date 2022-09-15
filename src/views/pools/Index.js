@@ -10,20 +10,21 @@ import {
     ModalFooter,
     ModalHeader,
     Row,
-    Table
+    Table, UncontrolledAccordion
 } from "reactstrap";
 import loader from '../../assets/images/loader.gif';
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
+import {modalTypesEnum} from "../../staticData";
 import {connect} from "react-redux";
 import {getPoolData, getTokenData, roundDownForSwap} from "../../helper";
 import {collect} from "collect.js";
-import claimImage from '../../assets/images/claim.svg';
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
 import {ethers} from "ethers";
 import {PAIR_ABI} from "../../config";
 import React from "react";
+import BigScreenPoolList from "../../components/BigScreenPoolList";
+import SmallScreenPoolList from "../../components/SmallScreenPoolList";
 
 function Index(props) {
     const [tableData, setTableData] = useState([]);
@@ -31,6 +32,7 @@ function Index(props) {
     const [tableDataCount, setTableDataCount] = useState(0);
     const [myTableDataCount, setMyTableDataCount] = useState(0);
     const [tableList, setTableList] = useState([]);
+    const [table2List, setTable2List] = useState([]);
     const [filterText, setFilterText] = useState('');
     const [isMyPosition, setIsMyPosition] = useState(false);
     const [themeMode] = useState("dark-mode");
@@ -123,75 +125,23 @@ function Index(props) {
     }
 
     const updateTableList = async (poolList) => {
-        let pairList = [];
-        for (let pair of poolList) {
-            const icon1 = Object.keys(cryptoCoinsEnum).includes(pair.token1Name) ? cryptoCoinsEnum[pair.token1Name].icon : "question.png";
-            const icon2 = Object.keys(cryptoCoinsEnum).includes(pair.token2Name) ? cryptoCoinsEnum[pair.token2Name].icon : "question.png";
-            const rewardButtonClass =  (parseFloat(pair.userLpBalance) > 0) ? "claim-button-1" : "";
-            pairList.push(<tr key={pair.pairAddress}>
+        let pairForBigScreenList = [];
+        let pairForSmallScreenList = [];
 
-                <td>
-                    <div className="d-flex px-2 py-1">
-                        <div className="coin-group">
-                            <div className="coin pull-up">
-                                <img src={require("../../assets/images/coins/" + icon1)}
-                                     alt="coinImg" height="35" width="35"/>
-                            </div>
-                            <div className="coin pull-up">
-                                <img src={require("../../assets/images/coins/" + icon2)}
-                                     alt="coinImg" height="35" width="35"/>
-                            </div>
-                        </div>
-                        <div className="d-flex flex-column justify-content-center ps-2">
-                            <h6 className="mb-0 ">
-                                <a className="pair-title text-decoration-none" target="_blank" rel="noreferrer"
-                                   href={'https://evm.explorer.canto.io/address/' + pair.pairAddress}>{pair.pairName}</a>
-                            </h6>
-                            <p className="text-xs text-secondary mb-0">{pair.isStable ? "Stable" : "Volatile"} Pool</p>
-                        </div>
-                    </div>
-                </td>
-                <td className="text-center">
-                    <p className="text-xs text-primary mb-0">{pair.wallet.token1 + ' ' + pair.token1Name}</p>
-                    <p className="text-xs text-primary mb-0">{pair.wallet.token2 + ' ' + pair.token2Name}</p>
-                </td>
-                <td className="text-center">
-                    <p className="text-xs text-primary mb-0">{pair.myPool.token1 + ' ' + pair.token1Name}</p>
-                    <p className="text-xs text-primary mb-0">{pair.myPool.token2 + ' ' + pair.token2Name}</p>
-                </td>
-                <td className="text-center">
-                    <p className="text-xs text-primary mb-0">{pair.totalPool.token1 + ' ' + pair.token1Name}</p>
-                    <p className="text-xs text-primary mb-0">{pair.totalPool.token2 + ' ' + pair.token2Name}</p>
-                </td>
-                <td className="text-center action">
-                    <div className="border-start ps-2 ms-2">
-                        <Link className="btn btn-forte btn-success me-md-3 mt-xs-2" to={'/pool/add-liquidity/' + pair.slug}>
-                            <img className="align-middle me-1 sm-hidden" alt="add button"
-                                src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}/>
-                            <span className="align-middle">Add</span>
-                        </Link>
-                        { parseFloat(pair.userLpBalance) > 0 ?
-                            <Link className="btn btn-forte btn-danger mt-xs-2 me-md-3" to={'/pool/remove-liquidity/' + pair.slug}>
-                                <img  className="align-middle me-1 sm-hidden" alt="remove button"
-                                    src={require("../../assets/images/" + (themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")} />
-                                <span className="align-middle">Remove</span>
-                            </Link>
-                            : ""}
-                        { (Number(pair.claim.token1) > 0 ||  Number(pair.claim.token2) > 0) ?
-                            <button className={"btn btn-primary mt-xs-2 claim-button " + rewardButtonClass} onClick={() => selectRewardPair(pair)} >
-                                <img className="align-middle me-1 sm-hidden" alt="Claim button" src={claimImage} height="16" width="16" />
-                                <span className="align-middle">Claim Fees</span>
-                            </button>
-                            : ""}
-                    </div>
-                </td>
-            </tr>);
+        for (let pair of poolList) {
+            pairForBigScreenList.push(
+                <BigScreenPoolList pair={pair} themeMode={themeMode} selectRewardPair={(pair) => selectRewardPair(pair)}/>
+            );
+            pairForSmallScreenList.push(
+                <SmallScreenPoolList pair={pair} themeMode={themeMode} selectRewardPair={(pair) => selectRewardPair(pair)}/>
+            );
         }
-        setTableList(pairList);
+        setTableList(pairForBigScreenList);
+        setTable2List(pairForSmallScreenList);
     }
 
     return (
-        <Container className="mt-5 pool">
+        <Container className="mt-md-5 pool">
             <Row>
                 <Col>
                     <Card>
@@ -207,7 +157,7 @@ function Index(props) {
                                 </Col>
                             </Row>
                         </CardHeader>
-                        <Row className='mx-0 py-3'>
+                        <Row className='mx-0 py-md-3'>
                             <Col className='d-flex align-items-center mt-1 form-switch my-position' md='6' sm='12'>
                                 <label className={"me-1 form-label " + (!isMyPosition ? 'label-selected' : '')}>
                                     All Positions
@@ -220,7 +170,7 @@ function Index(props) {
                                     My Positions
                                 </label>
                             </Col>
-                            <Col className='d-flex align-items-center justify-content-end mt-1' md='6' sm='12'>
+                            <Col className='d-flex align-items-center justify-content-end my-1' md='6' sm='12'>
                                 <Input
                                     value={filterText}
                                     className='dataTable-filter with-bg'
@@ -231,47 +181,60 @@ function Index(props) {
                                 />
                             </Col>
                         </Row>
-                        <Row className='justify-content-end mx-0'>
+                        <Row className='pool-list justify-content-end mx-0'>
                             <Col md='12' sm='12'>
                                 <Table responsive>
                                     <thead>
                                     <tr>
                                         <th>Pair</th>
-                                        <th className="text-center">Wallet</th>
-                                        <th className="text-center">My Pool Amount</th>
-                                        <th className="text-center">Total Pool Amount</th>
-                                        <th className="text-center">Add or Remove Liquidity</th>
+                                        <th className="text-center sm-hidden">Wallet</th>
+                                        <th className="text-center sm-hidden">My Pool Amount</th>
+                                        <th className="text-center sm-hidden">Total Pool Amount</th>
+                                        <th className="text-center sm-hidden">Add or Remove Liquidity</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
                                     {tableList.length ?
-                                        tableList :
-                                        <tr>
-                                            <td colSpan={6} className="text-muted text-center">
-                                                <img src={loader} alt="loader" className="min-h-150 loader"/>
-                                                <h4 className="text-white">Fetching data..</h4>
-                                            </td>
-                                        </tr>}
-                                    </tbody>
+                                        <>
+                                            <tbody className="d-none sm-show">
+                                                <UncontrolledAccordion defaultOpen="1">
+                                                    {table2List}
+                                                </UncontrolledAccordion>
+                                            </tbody>
+                                            <tbody className="sm-hidden">
+                                                {tableList}
+                                            </tbody>
+                                        </>
+                                        :
+                                        <tbody>
+                                            <tr>
+                                                <td colSpan={6} className="text-muted text-center py-5">
+                                                    <img src={loader} alt="loader" className="min-h-150 loader"/>
+                                                    <h4 className="fetching-data ">Fetching data..</h4>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    }
                                 </Table>
                             </Col>
                         </Row>
                         <Row className='justify-content-end mt-0 py-3 text-center show-more'>
                             <Col md='12' sm='12'>
                                 {isMyPosition ?
-                                    <button onClick={() => setMyItemPage(myItemPage + 10)}
-                                            className="btn btn-outline-primary px-5 py-3"
-                                            disabled={myTableDataCount <= myItemPage}
-                                    >
-                                        Show More
-                                    </button>
+                                    (myTableDataCount > myItemPage) ?
+                                        <button onClick={() => setMyItemPage(myItemPage + 10)}
+                                                className="btn btn-outline-primary px-5 py-3"
+                                                disabled={myTableDataCount <= myItemPage}
+                                        >
+                                            Show More
+                                        </button> : null
                                     :
-                                    <button onClick={() => setAllItemPage(allItemPage + 10)}
-                                            className="btn btn-outline-primary px-5 py-3"
-                                            disabled={tableDataCount <= allItemPage}
-                                    >
-                                        Show More
-                                    </button>
+                                    (tableDataCount > allItemPage) ?
+                                        <button onClick={() => setAllItemPage(allItemPage + 10)}
+                                                className="btn btn-outline-primary px-5 py-3"
+                                                disabled={tableDataCount <= allItemPage}
+                                        >
+                                            Show More
+                                        </button> : null
                                 }
                             </Col>
                         </Row>
