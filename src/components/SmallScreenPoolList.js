@@ -35,7 +35,7 @@ const SmallScreenPoolList = (props) => {
                     <td className="py-0">
                         <AccordionBody accordionId={pair.pairAddress}>
                             <div className="table-responsive">
-                                <table className="table table-striped table-dark mb-0">
+                                <table className="table table-striped mb-0">
                                     <tbody className="sm-device">
                                         <tr>
                                             <td>

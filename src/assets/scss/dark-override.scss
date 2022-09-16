@@ -124,5 +124,8 @@ body.dark-mode {
 	.fetching-data {
 		@extend .text-white;
 	}
+	.table-striped > tbody > tr:nth-of-type(odd) > *{
+		background-color: #2c3034;
+	}
 
 }
