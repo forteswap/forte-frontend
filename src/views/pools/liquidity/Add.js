@@ -275,36 +275,39 @@ const Add = (props) => {
 
     return (
         <>
-            <Container className="mt-5">
+            <Container className="mt-md-5">
                 <Row className="justify-content-center">
                     <Col lg={6}>
                         <Card>
                             <CardHeader>
-                                <div className="d-flex w-100">
-                                    <Link to={"/pool"} className="me-3 flex-grow-0">
-                                        <img src={leftArrowImage} className="align-middle me-1" alt="back"/>
-                                    </Link>
-                                    <CardTitle className="align-middle flex-grow-0">Add Liquidity</CardTitle>
-
+                                <Row>
+                                    <Col md={7} sm={7} xs={12} className="d-flex">
+                                        <Link to={"/pool"} className="me-3 flex-grow-0">
+                                            <img src={leftArrowImage} className="align-middle me-1" alt="back"/>
+                                        </Link>
+                                        <CardTitle className="align-middle flex-grow-0">Add Liquidity</CardTitle>
+                                    </Col>
                                     {(crypto1.name === 'WCANTO' || crypto2.name === 'WCANTO') ? (
-
-                                        <div className="flex-grow-1">
-                                            <div className="form-check float-end">
+                                        <Col md={5} sm={5} xs={12}>
+                                            <div className="form-check">
                                                 <input className="form-check-input" id="nativeCantoCheckbox"
                                                        type="checkbox" onChange={handleCheckbox}/>
                                                 <label htmlFor="nativeCantoCheckbox" className="col-form-label pt-0">
                                                     Supply Native Canto
                                                 </label>
                                             </div>
-                                        </div>
-
+                                        </Col>
                                     ) : ""}
-                                </div>
-                                <p className="mt-4 card-text text-justify">
-                                    When you add liquidity, you will receive pool tokens representing your position.
-                                    These tokens automatically earn proportional to your share of the pool and can be
-                                    redeemed at any time.
-                                </p>
+                                </Row>
+                                <Row>
+                                    <Col md={12}>
+                                        <p className="mt-4 card-text text-justify">
+                                            When you add liquidity, you will receive pool tokens representing your position.
+                                            These tokens automatically earn proportional to your share of the pool and can be
+                                            redeemed at any time.
+                                        </p>
+                                    </Col>
+                                </Row>
                             </CardHeader>
                             <CardBody>
                                 <Row>
@@ -422,11 +425,16 @@ const Add = (props) => {
                                         </div>
                                     </Col>
                                     <Col sm={12}>
-                                        <button onClick={togglePreviewModal}
-                                                disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 btn-submit">
-                                            Add
-                                        </button>
+                                        {(formData.amountADesired.length > 0 && formData.amountBDesired.length > 0) ?
+                                            <button onClick={togglePreviewModal}
+                                                    className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 btn-submit">
+                                                Add
+                                            </button>
+                                            :
+                                            <button className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 btn-submit">
+                                                Enter Value
+                                            </button>
+                                        }
                                     </Col>
                                 </Row>
                             </CardBody>

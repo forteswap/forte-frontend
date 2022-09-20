@@ -16,7 +16,7 @@ body:not(.dark-mode) {
 	}
 
 	.pair-title {
-		@extend .text-dark;
+		color: var(--forte-primary-text-color) !important;
 	}
 
 	.button-max {
