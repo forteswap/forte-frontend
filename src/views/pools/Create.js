@@ -262,7 +262,7 @@ const Create = () => {
 
     return (
         <>
-            <Container className="mt-5">
+            <Container className="mt-md-5">
                 <Row className="justify-content-center">
                     <Col lg={6}>
                         <Card>
@@ -451,11 +451,16 @@ const Create = () => {
                                         </div>
                                     </Col>
                                     <Col sm={12}>
-                                        <button onClick={togglePreviewModal}
-                                                disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
-                                                className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 mt-3 btn-submit">
-                                            Add
-                                        </button>
+                                        {(formData.amountADesired.length > 0 && formData.amountBDesired.length > 0) ?
+                                            <button onClick={togglePreviewModal}
+                                                    disabled={formData.amountADesired.length <= 0 && formData.amountBDesired.length <= 0}
+                                                    className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 mt-3 btn-submit">
+                                                Create
+                                            </button> :
+                                            <button className="btn btn-lg btn-primary align-items-center py-md-4 btn-starch fs-6 btn-submit">
+                                                Enter Value
+                                            </button>
+                                        }
                                     </Col>
                                 </Row>
                             </CardBody>

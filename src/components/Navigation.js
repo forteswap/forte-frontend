@@ -12,48 +12,65 @@ const themes = {
 const Navigation = () => {
     let provider = window.ethereum;
     const location = useLocation();
-    const [buttonTitle, setButtonTitle] = useState('Connect Metamask');
     const currentTheme = localStorage.getItem("forte-theme");
     const [theme, setTheme] = useState(currentTheme);
     const [darkMode, setDarkMode] = useState(currentTheme === 'null' || typeof currentTheme == "object");
+    const [account, setAccount] = useState("");
 
-    const connect = async (showMessage = false) => {
+    useEffect(() => {
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
+            connect().then()
+        }
+    }, []);
+
+    window.ethereum.on('accountsChanged', function (accounts) {
+        if(account == null){
+            window.localStorage.removeItem("forte-connected")
+        }else {
+            getPoolData().then()
+            setAccount(accounts[0]);
+        }
+    });
+
+    const connect = async () => {
         try {
             if (provider) {
-                setButtonTitle("Connecting ...")
                 await provider.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: '0x1e14',
-                        rpcUrls: ['https://canto.evm.chandrastation.com'],
-                        chainName: 'CANTO',
-                        nativeCurrency: {
-                            name: 'CANTO',
-                            symbol: 'CANTO', // 2-6 characters long
-                            decimals: 18,
-                        },
-                    }]
+                    method: 'wallet_switchEthereumChain',
+                    params: [{chainId: '0x1e14'}]
                 });
-                await provider.request({method: 'wallet_switchEthereumChain', params: [{chainId: '0x1e14'}]});
-                const accounts = await provider.request({method: 'eth_requestAccounts'});
-                setButtonTitle(accounts[0].slice(0, 6) + '...' + accounts[0].substr(-4))
+                const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                setAccount(accounts[0]);
+                window.localStorage.setItem("forte-connected", "injected");
             } else {
-                if (!showMessage) {
-                    displayErrorMessage("Please connect wallet first!");
+                displayErrorMessage("Please connect wallet first!");
+            }
+        } catch (switchError) {
+            if (switchError.code === 4902) {
+                try {
+                    await provider.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0x1e14',
+                            rpcUrls: ['https://canto.evm.chandrastation.com'],
+                            chainName: 'CANTO',
+                            nativeCurrency: {
+                                name: 'CANTO',
+                                symbol: 'CANTO', // 2-6 characters long
+                                decimals: 18,
+                            },
+                        }]
+                    });
+                } catch (addError) {
+                    displayErrorMessage("Transaction did not go through");
                 }
             }
-        } catch (e) {
-            setButtonTitle("Connect Metamask");
         }
     }
 
     useEffect(() => {
         changeTheme(theme)
     }, [theme]);
-
-    useEffect(() => {
-        connect(true).then();
-    }, []);
 
     const changeTheme = (theme) => {
         setTheme(theme);
@@ -82,15 +99,15 @@ const Navigation = () => {
                     <div className="navbar navbar-default clearfix">
                         <ul className="nav nav-pills" id="pills-tab" role="tablist">
                             <li className="nav-item" role="presentation">
-                                <Link className={location.pathname === "/" ? `nav-link active` : 'nav-link'} id="pills-home-tab" data-bs-toggle="pill"
-                                      to={'/'} type="button" role="tab" aria-controls="pills-home"
-                                      aria-selected="true">swap
+                                <Link className={location.pathname === "/" ? `nav-link active` : 'nav-link'} id="pills-home-tab"
+                                      data-bs-toggle="pill" to={'/'} type="button" role="tab" aria-controls="pills-home" aria-selected="true">
+                                      swap
                                 </Link>
                             </li>
                             <li className="nav-item" role="presentation">
-                                <Link className={location.pathname === "/pool" ? `nav-link active` : 'nav-link'} id="pills-profile-tab" data-bs-toggle="pill"
-                                      to={'/pool'} type="button" role="tab"
-                                      aria-controls="pills-profile" aria-selected="false">pool
+                                <Link className={location.pathname.includes("pool") ? `nav-link active` : 'nav-link'} id="pills-profile-tab"
+                                      data-bs-toggle="pill" to={'/pool'} type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
+                                      pool
                                 </Link>
                             </li>
                         </ul>
@@ -100,11 +117,11 @@ const Navigation = () => {
                     <div className="navbar navbar-default clearfix">
                         <div className="navbar-inner">
                             <div className="navbar-collapse justify-content-between">
-                                <ul className="list-inline m-0 d-flex align-items-center justify-content-end gap-3">
+                                <ul className="list-inline m-0 d-flex align-items-center justify-content-end gap-1">
                                     <li>
                                         <div className="form-check form-switch float-end">
                                             <label className="theme-setting">
-                                                <input className='toggle-checkbox' type='checkbox' checked={darkMode} onClick={() => {
+                                                <input className='toggle-checkbox' type='checkbox' checked={darkMode} onChange={() => {
                                                     setDarkMode(!darkMode);
                                                     setTheme(darkMode ? themes.light : themes.dark);
                                                 }} />
@@ -121,8 +138,14 @@ const Navigation = () => {
                                         </div>
                                     </li>
                                     <li className="header-wallet nav-item dropdown">
-                                        <button className="btn btn-primary wallet-button"
-                                                onClick={connect}> {buttonTitle}</button>
+                                        {account ?
+                                            <button className="btn btn-primary wallet-button">
+                                               {account.slice(0, 6) + '...' + account.slice(account.length - 4)}
+                                            </button> :
+                                            <button className="btn btn-primary wallet-button" onClick={connect}>
+                                                Connect Metamask
+                                            </button>
+                                        }
                                     </li>
                                 </ul>
                             </div>
