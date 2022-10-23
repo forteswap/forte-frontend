@@ -46,7 +46,6 @@ const CryptoListModal = (props) => {
             name: symbol,
             address: newAddress,
             decimal: 18,
-            stable: false,
         };
         onValueUpdate(cryptoCoin);
     }
