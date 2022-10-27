@@ -92,6 +92,13 @@ export const cryptoCoinsEnum = {
         name: "ENC",
         address: "0x373A8cD983948c5c20759dFae763D3bb7790F383",
         decimal: 18,
+    },
+    rab: {
+        icon: "rab.jpg",
+        title: "HappyRabbit",
+        name: "RAB",
+        address: "0x241f6A1Ea972EEDB05F76e25179347719e4e8B72",
+        decimal: 18,
     }
 };
 
