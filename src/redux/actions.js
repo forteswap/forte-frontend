@@ -16,6 +16,8 @@ function assignTokenPrice(address){
         return 1;
     } else if (address === cryptoCoinsEnum.wcanto.address){
         return 0.30;
+    } else if (address == cryptoCoinsEnum.atom.address){
+        return 13;
     } else return 0;
 
 }
