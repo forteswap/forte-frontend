@@ -259,6 +259,8 @@ const Index = () => {
             swapExactCANTOForTokens(amountOutMin).then();
         } else if (crypto1.title !== cryptoCoinsEnum.canto.title && crypto2.title === cryptoCoinsEnum.canto.title) {
             swapExactTokensForCANTO(amountOutMin).then()
+        } else if (crypto1.title == cryptoCoinsEnum.rab.title) {
+            UNSAFE_swapExactTokensForTokens(amountOutMin).then();
         } else {
             swapExactTokensForTokens(amountOutMin).then()
         }
@@ -323,6 +325,30 @@ const Index = () => {
             const transaction = await contract.connect(signer).swapExactTokensForTokens(
                 roundDownAndParse(formData.from,crypto1.decimal),
                 amountOutMin,
+                routes,
+                accounts[0],
+                deadline
+            )
+            await transaction.wait()
+            showModal(modalTypesEnum.TRANSACTION_SUCCESS_MODAL, {
+                hash: transaction.hash,
+                title: "Swap was successful!",
+                isSwap: true
+            })
+        } catch (e) {
+            handleException(e)
+        }
+    }
+
+    const UNSAFE_swapExactTokensForTokens = async (amountOutExact) => {
+        console.log("between two ERC20 token")
+        try {
+            waitForConfirmation();
+            await contractInitialize();
+            const deadline = getDeadline();
+            const amounts = [roundDownAndParse(formData.from,crypto1.decimal), amountOutExact];
+            const transaction = await contract.connect(signer).UNSAFE_swapExactTokensForTokens(
+                amounts,
                 routes,
                 accounts[0],
                 deadline
