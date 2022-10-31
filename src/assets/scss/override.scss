@@ -1,9 +1,26 @@
 body {
-	background-image: url("../images/background.png");
 	color: #5A5A5A;
 }
 
+//@todo temporary, whole css will be replaced with tailwind
+#radial-gradient-container {
+	width: 200vw;
+	height: 200vh;
+	transform: translate(-50vw, -100vh);
+	background: linear-gradient(rgb(32 39 56) 0%, rgb(39 33 121) 100%);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	pointer-events: none;
+	z-index: -1;
+}
+
 body:not(.dark-mode) {
+	#radial-gradient-container {
+		background: linear-gradient(rgb(222 218 215) 0%, rgb(255 255 255) 100%);
+	}
+
 	.btn:hover {
 		//color: var(--forte-primary-text-color);
 		//background-color: var(--forte-primary);

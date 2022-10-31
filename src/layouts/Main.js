@@ -11,6 +11,7 @@ const Main = ({children}) => {
             <CookiesProvider>
                 <GlobalModalProvider>
                     <main className="mb-5">
+                        <div id="radial-gradient-container" />
                         <Notice/>
                         <Navigation/>
                         {children}
