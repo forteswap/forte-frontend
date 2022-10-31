@@ -10,7 +10,7 @@ export function displayMessage(message) {
     // Snackbar.show({text: message, pos: 'top-center', backgroundColor : '#00ff721f',actionTextColor: '#28c76f', duration: 6000});
 }
 
-export const displayErrorMessage = (message) => toast(message.toString);
+export const displayErrorMessage = (message) => toast.error(message, {theme: 'dark', position: 'bottom-right', style: {backgroundColor: 'rgb(39, 43, 131)'}});
 
 export function getNumberValue(value, decimal = 18) {
     if(value !== 0){
