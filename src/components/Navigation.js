@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {displayErrorMessage, getPoolData} from "../helper.js";
 import logo from "../assets/images/forte_logo_white.png"
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import {useLocation} from "react-router";
+import {ethers} from "ethers";
 const themes = {
     dark: "",
     light: "white-layout",
@@ -21,23 +22,29 @@ const Navigation = () => {
         if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
             connect().then()
         }
-    }, []);
 
-    window.ethereum?.on('accountsChanged', function (accounts) {
-        if(account == null){
-            window.localStorage.removeItem("forte-connected")
-        }else {
-            getPoolData().then()
-            setAccount(accounts[0]);
-        }
-    });
+        window.ethereum?.on('accountsChanged', function (accounts) {
+            if(account == null){
+                window.localStorage.removeItem("forte-connected")
+            } else {
+                getPoolData().then()
+                setAccount(accounts[0]);
+            }
+        });
+
+        window.ethereum?.on('chainChanged', function (chainId) {
+            if(chainId !== '0x1e14') displayErrorMessage("Please connect to the Canto blockchain.");
+        });
+    }, [])
 
     const connect = async () => {
         try {
             if (provider) {
                 await provider.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{chainId: '0x1e14'}]
+                    params: [{
+                        chainId: '0x1e14',
+                    }]
                 });
                 const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
                 setAccount(accounts[0]);
@@ -46,7 +53,7 @@ const Navigation = () => {
                 displayErrorMessage("Please connect wallet first!");
             }
         } catch (switchError) {
-            if (switchError.code === 4902) {
+            if (switchError.code === 4901) {
                 try {
                     await provider.request({
                         method: 'wallet_addEthereumChain',
@@ -64,6 +71,9 @@ const Navigation = () => {
                 } catch (addError) {
                     displayErrorMessage("Transaction did not go through");
                 }
+            }
+            else if (switchError.code === -32002) {
+                displayErrorMessage("Please finalize connecting in Metamask.");
             }
         }
     }

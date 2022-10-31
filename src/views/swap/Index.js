@@ -108,8 +108,6 @@ const Index = () => {
         const isAnyAmountMissing = !formData.from || !formData.to
         const isAnyTokenMissing = !token1 || !token2
 
-        console.log('yes', formData.to)
-
         if (!isAnyAmountMissing && !isAnyTokenMissing) {
             buttonState.text = 'Swap'
             buttonState.disabled = false
@@ -175,7 +173,6 @@ const Index = () => {
                     let to;
                     const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
                     const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
-                    // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
                     if (stableRate && volatileRate) {
                         if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
                             to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
@@ -208,12 +205,6 @@ const Index = () => {
             setFormData(oldValues => ({...oldValues, "to": ''}));
         }
     }, [formData?.from, isFetchingPrice])
-
-    // End of refactor - dirty stage
-
-    // useEffect(() => {
-    //     contractInitialize().then()
-    // }, [token1,token2,crypto1,crypto2]);
 
     const checkAllowance = async () => {
         try {
