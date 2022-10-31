@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {displayErrorMessage, getPoolData} from "../helper";
+import {displayErrorMessage, getPoolData} from "../helper.js";
 import logo from "../assets/images/forte_logo_white.png"
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
@@ -52,7 +52,7 @@ const Navigation = () => {
                         method: 'wallet_addEthereumChain',
                         params: [{
                             chainId: '0x1e14',
-                            rpcUrls: ['https://canto.evm.chandrastation.com'],
+                            rpcUrls: ['https://canto.slingshot.finance'],
                             chainName: 'CANTO',
                             nativeCurrency: {
                                 name: 'CANTO',
