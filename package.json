@@ -1,11 +1,12 @@
 {
   "name": "forte-fronend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "engines": {
     "npm": "please-use-yarn",
     "yarn": ">= 1.22.10"
   },
+  "type": "module",
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
     "@reduxjs/toolkit": "^1.8.5",
@@ -19,10 +20,12 @@
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
+    "react-feather": "^2.0.10",
     "react-redux": "^8.0.2",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.0.8",
     "reactstrap": "9.0.1",
     "redux-thunk": "^2.4.1",
     "sass": "^1.54.4",
@@ -51,5 +54,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "typescript": "^4.4.3"
   }
 }
