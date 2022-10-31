@@ -1,11 +1,11 @@
-import TransactionSuccessModal from "./components/modal/TransactionSuccess";
-import TransactionRejectedModal from "./components/modal/TransactionRejected";
-import TransactionFailModal from "./components/modal/TransactionFail";
-import TransactionCanceledModal from "./components/modal/TransactionCanceled";
-import SignatureFailModal from "./components/modal/SignatureFail";
-import NetworkErrorModal from "./components/modal/NetworkError";
-import CustomModal from "./components/modal/Custom";
-import ConfirmationWaitingModal from "./components/modal/ConfirmationWaitingModal";
+import TransactionSuccessModal from "./components/modal/TransactionSuccess.js";
+import TransactionRejectedModal from "./components/modal/TransactionRejected.js";
+import TransactionFailModal from "./components/modal/TransactionFail.js";
+import TransactionCanceledModal from "./components/modal/TransactionCanceled.js";
+import SignatureFailModal from "./components/modal/SignatureFail.js";
+import NetworkErrorModal from "./components/modal/NetworkError.js";
+import CustomModal from "./components/modal/Custom.js";
+import ConfirmationWaitingModal from "./components/modal/ConfirmationWaitingModal.js";
 
 export const cryptoCoinsEnum = {
     canto: {

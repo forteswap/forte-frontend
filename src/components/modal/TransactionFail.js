@@ -2,7 +2,7 @@ import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reac
 import ellipseImg from "../../assets/images/ellipse.svg"
 
 import {useNavigate} from "react-router";
-import {useGlobalModalContext} from "./GlobalModal";
+import {useGlobalModalContext} from "./GlobalModal.js";
 
 const TransactionFailModal = () => {
     const { hideModal, store } = useGlobalModalContext();

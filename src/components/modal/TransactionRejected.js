@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
 import {useNavigate} from "react-router";
 import polygonImg from "../../assets/images/polygon.svg";
-import {useGlobalModalContext} from "./GlobalModal";
+import {useGlobalModalContext} from "./GlobalModal.js";
 
 const TransactionRejectedModal = (props) => {
     const { hideModal, store } = useGlobalModalContext();

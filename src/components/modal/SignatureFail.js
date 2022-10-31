@@ -1,7 +1,7 @@
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
 import {useNavigate} from "react-router";
 import ellipseImg from "../../assets/images/ellipse.svg";
-import {useGlobalModalContext} from "./GlobalModal";
+import {useGlobalModalContext} from "./GlobalModal.js";
 
 const SignatureFailModal = () => {
     const {hideModal} = useGlobalModalContext();

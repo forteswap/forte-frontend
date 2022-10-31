@@ -1,9 +1,9 @@
 //synchronous action creator
 import {ethers} from "ethers";
-import {balanceOfABI, PAIR_ABI, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "../config";
+import {balanceOfABI, PAIR_ABI, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "../config.js";
 import {collect} from "collect.js";
-import {cryptoCoinsEnum} from "../staticData";
-import {getNumberValue, getNumberValueForTest} from "../helper";
+import {cryptoCoinsEnum} from "../staticData.js";
+import {getNumberValue, getNumberValueForTest} from "../helper.js";
 
 const Tag = 'action';
 const fetchPostsSuccess = data => ({

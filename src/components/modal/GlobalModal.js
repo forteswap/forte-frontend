@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from 'react';
-import {modalComponentsEnum} from "../../staticData";
+import {modalComponentsEnum} from "../../staticData.js";
 
 const initialState = {
     showModal: () => {},

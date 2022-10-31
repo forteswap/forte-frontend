@@ -1,5 +1,5 @@
 import {Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
-import {useGlobalModalContext} from "./GlobalModal";
+import {useGlobalModalContext} from "./GlobalModal.js";
 import React from "react";
 
 const ConfirmationWaitingModal = () => {
