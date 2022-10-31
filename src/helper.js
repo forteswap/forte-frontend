@@ -1,27 +1,18 @@
-import {
-    CHUNK_SIZE,
-    CONTRACT_ADDRESS,
-    DEADLINE_MINUTES,
-    PAIR_CONTRACT_ADDRESS,
-    PAIR_FACTORY_ABI
-} from "./config";
-import {cryptoCoinsEnum} from "./staticData";
+import {CHUNK_SIZE, CONTRACT_ADDRESS, DEADLINE_MINUTES, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config.js";
+import {cryptoCoinsEnum} from "./staticData.js";
+import { toast } from 'react-toastify';
 import {ethers} from "ethers";
 import {batch} from "react-redux";
-import store from "./redux/store";
-import {fetchPoolData} from "./redux/actions";
-
-const Snackbar = require('node-snackbar');
+import store from "./redux/store.js";
+import {fetchPoolData} from "./redux/actions.js";
 
 export function displayMessage(message) {
-    Snackbar.show({text: message, pos: 'top-center', backgroundColor : '#00ff721f',actionTextColor: '#28c76f', duration: 6000});
+    // Snackbar.show({text: message, pos: 'top-center', backgroundColor : '#00ff721f',actionTextColor: '#28c76f', duration: 6000});
 }
 
-export function displayErrorMessage(message) {
-    Snackbar.show({text: message, pos: 'top-center', backgroundColor : '#f910111f', actionTextColor: '#ea5455', duration: 6000});
-}
+export const displayErrorMessage = (message) => toast(message.toString);
 
-export function getNumberValue(value,decimal= 18,isWallet) {
+export function getNumberValue(value, decimal = 18) {
     if(value !== 0){
         return parseFloat((value.toString() / Math.pow(10,decimal)).toFixed(6))
     }
