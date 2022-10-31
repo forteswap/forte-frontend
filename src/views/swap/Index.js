@@ -6,7 +6,6 @@ import {
     CardTitle,
     Col,
     Container,
-    Input,
     Modal,
     ModalBody, ModalFooter,
     ModalHeader,
@@ -16,11 +15,11 @@ import { Input as NumericalInput } from '../../components/NumericalInput/index.t
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList.js";
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
 import SwapSetting from "../../components/modal/SwapSetting.js";
 import settingImg from "../../assets/images/setting.svg";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config.js";
 import {
     getDeadline,
     isTokenApproved,
@@ -30,7 +29,6 @@ import {
     getEstimatedPriceImpact
 } from "../../helper.js";
 import detectEthereumProvider from "@metamask/detect-provider";
-import {useDebounce} from '../../hooks/useDebounce.ts'
 import {ethers} from "ethers";
 import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
 import TokenImage from "../../components/Image/token.tsx";
@@ -120,61 +118,7 @@ const Index = () => {
         submitButton()
     };
 
-    //@todo this is probably unsafe, needs tests
-    const calculateRate = async (ignore) => {
-        if (!ignore) {
-            if (token2.length > 0 && formData.from.length > 0) {
-                setIsFetchingPrice(true);
-                setIsPairAvailable(false);
-                const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
-                await contractInitialize().then()
-                let to;
-                const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
-                const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
-                // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
-                if (stableRate && volatileRate) {
-                    if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
-                        to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
-                        setRoutes([[token1, token2, true]])
-                    } else {
-                        to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
-                        setRoutes([[token1, token2, false]])
-                    }
-                    setFormData(oldValues => ({...oldValues, ["to"]: to}));
-                    if (to === 0 && formData.from > 0) {
-                        setIsPairAvailable(true);
-                    } else {
-                        setIsPairAvailable(false);
-                    }
-                    setIsFetchingPrice(false);
-                }
-            }
-        }
-    }
-
-    useEffect( () => {
-        let ignore = false;
-        if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
-
-        calculateRate(ignore)
-
-        return () => {
-            ignore = true;
-        };
-    }, [formData.from, token1, token2]);
-
-    // useEffect(() => {
-    //     // @todo this is a quickfix to handle emptying first input's value - unsafe, need to be done properly
-    //     if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
-    //
-    //     calculateRate().then()
-    // }, [formData.from, token1, token2]);
-
-    useEffect(() => {
-        contractInitialize().then()
-        submitButton()
-    }, [token1,token2,crypto1,crypto2]);
-
+    // @todo generalize / duplicated in Create.js
     const contractInitialize = async () => {
         try {
             let provider = await detectEthereumProvider();
@@ -193,6 +137,64 @@ const Index = () => {
             console.log("Ensure that you are connecting the correct wallet address with Metamask");
         }
     }
+
+    // Start of refactor - dirty stage
+    const intervalRef = useRef(null);
+
+    // //@todo hotfix - this code is bad, needs be refactored
+    useEffect(
+        () => {
+            if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+
+            if (token2.length > 0 && formData.from.length > 0) {
+                intervalRef.current = setTimeout(async () => {
+                    setIsFetchingPrice(true);
+                    setIsPairAvailable(false);
+                    const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
+                    await contractInitialize().then()
+                    let to;
+                    const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
+                    const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
+                    // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
+                    if (stableRate && volatileRate) {
+                        if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
+                            to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                            setRoutes([[token1, token2, true]])
+                        } else {
+                            to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                            setRoutes([[token1, token2, false]])
+                        }
+                        setFormData(oldValues => ({...oldValues, ["to"]: to}));
+                        if (to === 0 && formData.from > 0) {
+                            setIsPairAvailable(true);
+                        } else {
+                            setIsPairAvailable(false);
+                        }
+                        setIsFetchingPrice(false);
+                    }
+                }, 400);
+            } else {
+                clearTimeout(intervalRef.current);
+            }
+
+            return () => clearTimeout(intervalRef.current);
+        },
+        [contract, crypto1?.decimal, crypto2?.decimal, formData?.from?.length, signer, token1, token2, token2?.length]
+    );
+
+    // //@todo this code compliments the code above, needs to be refactored too
+    useEffect(() => {
+        if(!isFetchingPrice && !formData.from) {
+            setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+        }
+    }, [formData?.from, isFetchingPrice])
+
+    // End of refactor - dirty stage
+
+    useEffect(() => {
+        contractInitialize().then()
+        submitButton()
+    }, [token1,token2,crypto1,crypto2]);
 
     const checkAllowance = async () => {
         try {
