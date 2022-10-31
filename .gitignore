@@ -1,5 +1,10 @@
-node_modules/
-**/.DS_Store
+# dependencies
+/node_modules
+
+# builds
+yarn.lock
+/build
+
+# misc
 .DS_Store
-build/
 .idea
