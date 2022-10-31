@@ -1,4 +1,5 @@
-import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
+import {ethers} from 'ethers';
 import {
     Button,
     Card,
@@ -18,13 +19,13 @@ import {Link} from "react-router-dom";
 import leftArrowImage from "../../assets/images/left-arrow.svg";
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import React, {useEffect, useState} from "react";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
 import detectEthereumProvider from "@metamask/detect-provider";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
-import CryptoListModal from "../../components/modal/CryptoList";
-import {isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config.js";
+import CryptoListModal from "../../components/modal/CryptoList.js";
+import {isTokenApproved,roundDown,roundDownAndParse} from "../../helper.js";
+import TokenImage from "../../components/Image/token.tsx";
 
-const {ethers} = require('ethers');
 const Create = () => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts;
     const [crypto1, setCrypto1] = useState(cryptoCoinsEnum.wcanto);
@@ -317,10 +318,7 @@ const Create = () => {
                                                         {
                                                             crypto1 ?
                                                                 <>
-                                                                    <img className="align-middle float-start coin-icon"
-                                                                         height="28"
-                                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                                         alt="coinImg"/>
+                                                                    <TokenImage src={crypto1.icon}/>
                                                                     <span className="align-middle px-1">
                                                                         {crypto1.name}
                                                                     </span>
@@ -364,10 +362,7 @@ const Create = () => {
                                                     {
                                                         crypto2 !== null ?
                                                             <>
-                                                                <img className="align-middle float-start coin-icon"
-                                                                     height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                                     alt="coinImg"/>
+                                                                <TokenImage src={crypto2.icon}/>
                                                                 <span className="align-middle ps-2 pe-2">
                                                                     {crypto2.name}
                                                                 </span>
@@ -431,9 +426,7 @@ const Create = () => {
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(1)}>
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto1.icon}/>
                                                     <span className="align-middle flex-grow-1">Approve {crypto1.name}</span>
                                                 </button>
                                                 : null}
@@ -441,9 +434,7 @@ const Create = () => {
                                             {(crypto2 && !isToken2Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 ms-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(2)}>
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto2.icon}/>
                                                     <span
                                                         className="align-middle flex-grow-1">Approve {crypto2.name}</span>
                                                 </button>
@@ -482,10 +473,10 @@ const Create = () => {
                                                 <div className="text-end">
                                                     <div className="coin-group pe-2">
                                                         <div className="coin pull-up">
-                                                            <img src={require("../../assets/images/coins/" + crypto1.icon)} alt="coinImg" height="35" width="35"/>
+                                                            <TokenImage src={crypto1.icon}/>
                                                         </div>
                                                         <div className="coin pull-up">
-                                                            <img src={require("../../assets/images/coins/" + crypto2.icon)} alt="coinImg" height="35" width="35"/>
+                                                            <TokenImage src={crypto2.icon}/>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -15,16 +15,17 @@ import {
 import loader from '../../assets/images/loader.gif';
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {modalTypesEnum} from "../../staticData";
+import {modalTypesEnum} from "../../staticData.js";
 import {connect} from "react-redux";
-import {getPoolData, getTokenData, roundDownForSwap} from "../../helper";
+import {getPoolData, getTokenData, roundDownForSwap} from "../../helper.js";
 import {collect} from "collect.js";
-import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
 import {ethers} from "ethers";
-import {PAIR_ABI} from "../../config";
+import {PAIR_ABI} from "../../config.js";
 import React from "react";
-import BigScreenPoolList from "../../components/BigScreenPoolList";
-import SmallScreenPoolList from "../../components/SmallScreenPoolList";
+import BigScreenPoolList from "../../components/BigScreenPoolList.js";
+import SmallScreenPoolList from "../../components/SmallScreenPoolList.js";
+import TokenImage from "../../components/Image/token.tsx";
 
 function Index(props) {
     const [tableData, setTableData] = useState([]);
@@ -255,9 +256,7 @@ function Index(props) {
                                         </span>
                                         <div className="text-end">
                                             <div className="align-items-center px-3">
-                                                <img className="me-2 align-middle coin-img" alt="coinImg"
-                                                     src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                     height="30" width="30"/>
+                                                <TokenImage src={crypto1.icon}/>
                                                 <span className="align-middle coin-symbol">{crypto1.name}</span>
                                             </div>
                                         </div>
@@ -268,9 +267,7 @@ function Index(props) {
                                         </span>
                                         <div className="text-end">
                                             <div className="align-items-center px-3">
-                                                <img className="me-2 align-middle coin-img" alt="coinImg"
-                                                     src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                     height="30" width="30"/>
+                                                <TokenImage src={crypto2.icon}/>
                                                 <span className="align-middle coin-symbol">{crypto2.name}</span>
                                             </div>
                                         </div>

@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {Button, Col, Input, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
-import {ERC20_CONTRACT} from "../../config";
-import {cryptoCoinsEnum} from "../../staticData";
+import {ERC20_CONTRACT} from "../../config.js";
+import {cryptoCoinsEnum} from "../../staticData.js";
+import TokenImage from '../../components/Image/token.tsx'
 import {ethers} from "ethers";
 
 const CryptoListModal = (props) => {
@@ -21,8 +22,7 @@ const CryptoListModal = (props) => {
                     <div className="crypto-block" onClick={() => onValueUpdate(crypto)}>
                         <div className="coin-group pe-2">
                             <div className="coin pull-up">
-                                <img src={require("../../assets/images/coins/" + crypto.icon)} alt="coinImg" height="35"
-                                     width="35"/>
+                                <TokenImage src={crypto.icon}/>
                             </div>
                         </div>
                         <div className="crypto-title">{crypto.title}</div>

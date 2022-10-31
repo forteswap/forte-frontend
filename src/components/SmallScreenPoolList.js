@@ -1,6 +1,7 @@
 import {AccordionBody, AccordionHeader, AccordionItem} from "reactstrap";
 import {Link} from "react-router-dom";
-import {cryptoCoinsEnum} from "../staticData";
+import {cryptoCoinsEnum} from "../staticData.js";
+import TokenImage from "./Image/token.tsx";
 
 const SmallScreenPoolList = (props) => {
     const pair = props.pair;
@@ -17,10 +18,10 @@ const SmallScreenPoolList = (props) => {
                         <div className="d-flex px-2 py-1">
                             <div className="coin-group">
                                 <div className="coin pull-up">
-                                    <img src={require("../assets/images/coins/" + icon1)} alt="coinImg" height="35" width="35"/>
+                                    <TokenImage src={icon1}/>
                                 </div>
                                 <div className="coin pull-up">
-                                    <img src={require("../assets/images/coins/" + icon2)} alt="coinImg" height="35" width="35"/>
+                                    <TokenImage src={icon2}/>
                                 </div>
                             </div>
                             <div className="d-flex flex-column justify-content-center ps-2">

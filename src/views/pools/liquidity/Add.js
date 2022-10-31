@@ -1,4 +1,4 @@
-import {useGlobalModalContext} from "../../../components/modal/GlobalModal";
+import {useGlobalModalContext} from "../../../components/modal/GlobalModal.js";
 import {
     Button,
     Card,
@@ -19,15 +19,15 @@ import leftArrowImage from "../../../assets/images/left-arrow.svg";
 import addImage from '../../../assets/images/add.svg';
 import infoImage from '../../../assets/images/info.svg';
 import React, {useEffect, useRef, useState} from "react";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../../staticData";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../../staticData.js";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {useParams} from "react-router";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config.js";
 import collect from "collect.js";
-import {getNumberValue, getTokenData, isTokenApproved, roundDown, roundDownAndParse} from "../../../helper";
+import {getNumberValue, getTokenData, isTokenApproved, roundDown, roundDownAndParse} from "../../../helper.js";
 import {connect} from "react-redux";
-
-const {ethers} = require('ethers');
+import {ethers} from 'ethers';
+import TokenImage from "../../../components/Image/token.tsx";
 
 const Add = (props) => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts;
@@ -322,9 +322,7 @@ const Add = (props) => {
 
                                                 <div className="text-end">
                                                     <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto">
-                                                        <img className="align-middle float-start coin-icon" height="28"
-                                                             src={require("../../../assets/images/coins/" + crypto1.icon)}
-                                                             alt="coinImg"/>
+                                                        <TokenImage src={crypto1.icon}/>
                                                         <span className="align-middle px-1"> {crypto1.name}</span>
                                                     </button>
                                                 </div>
@@ -354,9 +352,7 @@ const Add = (props) => {
 
                                                 <div className="text-end">
                                                     <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto">
-                                                        <img className="align-middle float-start coin-icon" height="28"
-                                                             src={require("../../../assets/images/coins/" + crypto2.icon)}
-                                                             alt="coinImg"/>
+                                                        <TokenImage src={crypto2.icon}/>
                                                         <span className="align-middle ps-2 pe-4"> {crypto2.name}</span>
                                                     </button>
                                                 </div>
@@ -404,9 +400,7 @@ const Add = (props) => {
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(1)}>
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../../assets/images/coins/" + crypto1.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto1.icon}/>
                                                     <span
                                                         className="align-middle flex-grow-1">Approve {crypto1.name}</span>
                                                 </button>
@@ -415,9 +409,7 @@ const Add = (props) => {
                                             {(crypto2 && !isToken2Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 ms-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(2)}>
-                                                    <img className="align-middle float-start coin-img" height="28"
-                                                         src={require("../../../assets/images/coins/" + crypto2.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto2.icon}/>
                                                     <span
                                                         className="align-middle flex-grow-1">Approve {crypto2.name}</span>
                                                 </button>
@@ -454,9 +446,7 @@ const Add = (props) => {
                                                     className="align-middle coin-value">{formData.amountADesired}</span>
                                                 <div className="text-end">
                                                     <div className="align-items-center px-3">
-                                                        <img className="me-2 align-middle coin-img" alt="coinImg"
-                                                             src={require("../../../assets/images/coins/" + crypto1.icon)}
-                                                             height="30" width="30"/>
+                                                        <TokenImage src={crypto1.icon}/>
                                                         <span className="align-middle coin-symbol">{crypto1.name}</span>
                                                     </div>
                                                 </div>
@@ -472,9 +462,7 @@ const Add = (props) => {
                                                     className="align-middle coin-value">{formData.amountBDesired}</span>
                                                 <div className="text-end">
                                                     <div className="align-items-center px-3">
-                                                        <img className="me-2 align-middle coin-img" alt="coinImg"
-                                                             src={require("../../../assets/images/coins/" + crypto2.icon)}
-                                                             height="30" width="30"/>
+                                                        <TokenImage src={crypto2.icon}/>
                                                         <span className="align-middle coin-symbol">{crypto2.name}</span>
                                                     </div>
                                                 </div>

@@ -1,6 +1,8 @@
-import {cryptoCoinsEnum} from "../staticData";
+import {cryptoCoinsEnum} from "../staticData.js";
 import {Link} from "react-router-dom";
+import { Plus, Minus } from 'react-feather';
 import claimImage from '../assets/images/claim.svg';
+import TokenImage from "./Image/token.tsx";
 
 const BigScreenPoolList = (props) => {
     const pair = props.pair;
@@ -8,18 +10,15 @@ const BigScreenPoolList = (props) => {
     const icon2 = Object.keys(cryptoCoinsEnum).includes(pair.token2Name) ? cryptoCoinsEnum[pair.token2Name].icon : "question.png";
     const rewardButtonClass =  (parseFloat(pair.userLpBalance) > 0) ? "claim-button-1" : "";
     return (
-        <>
-            <tr key={pair.pairAddress}>
+        <tr key={pair.pairAddress}>
                 <td>
                     <div className="d-flex px-2 py-1">
                         <div className="coin-group">
                             <div className="coin pull-up">
-                                <img src={require("../assets/images/coins/" + icon1)}
-                                     alt="coinImg" height="35" width="35"/>
+                                <TokenImage src={icon1}/>
                             </div>
                             <div className="coin pull-up">
-                                <img src={require("../assets/images/coins/" + icon2)}
-                                     alt="coinImg" height="35" width="35"/>
+                                <TokenImage src={icon2}/>
                             </div>
                         </div>
                         <div className="d-flex flex-column justify-content-center ps-2">
@@ -46,14 +45,12 @@ const BigScreenPoolList = (props) => {
                 <td className="text-center action">
                     <div className="border-start ps-2 ms-2">
                         <Link className="btn btn-forte btn-success me-md-3 mt-xs-2" to={'/pool/add-liquidity/' + pair.slug}>
-                            <img className="align-middle me-1" alt="add button"
-                                 src={require("../assets/images/" + (props.themeMode === "dark-mode" ? 'dark-mode/' : '') + "add.svg")}/>
+                            <Plus/>
                             <span className="align-middle">Add</span>
                         </Link>
                         { parseFloat(pair.userLpBalance) > 0 ?
                             <Link className="btn btn-forte btn-danger mt-xs-2 me-md-3" to={'/pool/remove-liquidity/' + pair.slug}>
-                                <img  className="align-middle me-1" alt="remove button"
-                                      src={require("../assets/images/" + (props.themeMode === "dark-mode" ? 'dark-mode/' : '') + "remove.svg")} />
+                                <Minus/>
                                 <span className="align-middle">Remove</span>
                             </Link>
                             : ""}
@@ -66,7 +63,6 @@ const BigScreenPoolList = (props) => {
                     </div>
                 </td>
             </tr>
-        </>
     )
 }
 

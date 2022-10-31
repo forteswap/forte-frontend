@@ -17,10 +17,11 @@ import leftArrowImage from "../../assets/images/left-arrow.svg";
 import chainImage from "../../assets/images/chain.svg";
 import downArrowImage from "../../assets/images/down-arrow.svg"
 import {useEffect, useState} from "react";
-import CryptoListModal from "../../components/modal/CryptoList";
+import CryptoListModal from "../../components/modal/CryptoList.js";
 import coinImage from "../../assets/images/coin.svg";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
-import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
+import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
+import TokenImage from "../../components/Image/token.tsx";
 
 const Create = () => {
     const { showModal } = useGlobalModalContext();
@@ -90,8 +91,7 @@ const Create = () => {
                                                     {
                                                         crypto1 ?
                                                             <>
-                                                                <img className="align-middle float-start" height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto1.icon)} alt="coinImg"/>
+                                                                <TokenImage src={crypto.icon} height={28} width={28}/>
                                                                 <span className="align-middle ps-2 pe-4"> {crypto1.name}</span>
                                                             </>
                                                             : <>
@@ -122,8 +122,7 @@ const Create = () => {
                                                     {
                                                         crypto2 !== null ?
                                                             <>
-                                                                <img className="align-middle float-start" height="28"
-                                                                     src={require("../../assets/images/coins/" + crypto2.icon)} alt="coinImg"/>
+                                                                <TokenImage src={crypto2.icon} height={28} width={28}/>
                                                                 <span className="align-middle ps-2 pe-4"> {crypto2.name}</span>
                                                             </>
                                                             : <>
@@ -195,10 +194,10 @@ const Create = () => {
                                                 <div className="text-end">
                                                     <div className="coin-group pe-2">
                                                         <div className="coin pull-up">
-                                                            <img src={coinImage} alt="coinImg" height="35" width="35"/>
+                                                            <TokenImage src={coinImage}/>
                                                         </div>
                                                         <div className="coin pull-up">
-                                                            <img src={coinImage} alt="coinImg" height="35" width="35"/>
+                                                            <TokenImage src={coinImage}/>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -18,14 +18,15 @@ import leftArrowImage from "../../../assets/images/left-arrow.svg";
 import {useParams} from "react-router";
 import {useEffect, useState} from "react";
 import infoImage from "../../../assets/images/info.svg";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../../staticData";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../../staticData.js";
 import collect from 'collect.js';
 import detectEthereumProvider from "@metamask/detect-provider";
 import {ethers} from "ethers";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config";
-import {useGlobalModalContext} from "../../../components/modal/GlobalModal";
-import {getTokenData, isTokenApproved} from "../../../helper";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config.js";
+import {useGlobalModalContext} from "../../../components/modal/GlobalModal.js";
+import {getTokenData, isTokenApproved} from "../../../helper.js";
 import {connect} from "react-redux";
+import TokenImage from "../../../components/Image/token.tsx";
 
 function Remove(props) {
     let signer, web3Provider, erc20ContractLp, contract, accounts;
@@ -161,12 +162,10 @@ function Remove(props) {
                                                     className="btn btn-forte-image align-items-center d-flex py-md-2 px-md-3 ms-auto">
                                                     <div className="coin-group me-2">
                                                         <div className="coin pull-up">
-                                                            <img alt="coinImg" height="35" width="35" className="coin-icon"
-                                                                 src={require("../../../assets/images/coins/" + crypto1.icon)}/>
+                                                            <TokenImage src={crypto1.icon}/>
                                                         </div>
                                                         <div className="coin pull-up">
-                                                            <img alt="coinImg" height="35" width="35" className="coin-icon"
-                                                                 src={require("../../../assets/images/coins/" + crypto2.icon)}/>
+                                                            <TokenImage src={crypto2.icon}/>
                                                         </div>
                                                     </div>
                                                     <span
@@ -199,12 +198,10 @@ function Remove(props) {
                                             <Col md={4}>
                                                 <div className="coin-group text-center pe-2 d-block">
                                                     <div className="coin pull-up">
-                                                        <img alt="coinImg" height="35" width="35"
-                                                             src={require("../../../assets/images/coins/" + crypto1.icon)}/>
+                                                        <TokenImage src={crypto1.icon}/>
                                                     </div>
                                                     <div className="coin pull-up">
-                                                        <img alt="coinImg" height="35" width="35"
-                                                             src={require("../../../assets/images/coins/" + crypto2.icon)}/>
+                                                        <TokenImage src={crypto2.icon}/>
                                                     </div>
                                                 </div>
                                             </Col>
