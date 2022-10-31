@@ -15,7 +15,7 @@ import { Input as NumericalInput } from '../../components/NumericalInput/index.t
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList.js";
-import React, {useState, useEffect, useCallback, useRef} from "react";
+import React, {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
 import SwapSetting from "../../components/modal/SwapSetting.js";
 import settingImg from "../../assets/images/setting.svg";
@@ -34,10 +34,10 @@ import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
 import TokenImage from "../../components/Image/token.tsx";
 
 const Index = () => {
-    let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts, button;
+    let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts;
     const [formData, setFormData] = useState({
-        from: "",
-        to: "",
+        from: '',
+        to: '',
     });
     const [crypto1, setCrypto1] = useState(cryptoCoinsEnum.wcanto);
     const [crypto2, setCrypto2] = useState(null);
@@ -59,7 +59,6 @@ const Index = () => {
     const [isToken2Approved, setIsToken2Approved] = useState(false);
     const [isPairAvailable, setIsPairAvailable] = useState(false);
     const [isFetchingPrice, setIsFetchingPrice] = useState(false);
-    const [button1, setButton1] = useState("");
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
 
@@ -98,24 +97,45 @@ const Index = () => {
         }
     }
 
-    const submitButton = () => {
-        if(token1.length <= 0  || token2.length <= 0 ){
-            button = <button className="btn btn-lg btn-primary align-items-center btn-starch fs-6 py-md-4 mt-md-3 btn-submit">
-                Select Token
-            </button>
-        }  else {
-            button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
-                Swap In
-            </button>
+    // @todo This is a quickfix assuring correct button state, so we remove possibility to make an impossible trade
+    // @todo need to write it in a proper way
+    const submitButton = useMemo(() => {
+        const buttonState = {
+            text: '',
+            disabled: true
         }
 
-        setButton1(button)
-    }
+        const isAnyAmountMissing = !formData.from || !formData.to
+        const isAnyTokenMissing = !token1 || !token2
+
+        console.log('yes', formData.to)
+
+        if (!isAnyAmountMissing && !isAnyTokenMissing) {
+            buttonState.text = 'Swap'
+            buttonState.disabled = false
+        }
+        if (!isToken1Approved || !isToken2Approved) {
+            buttonState.text = 'Approve Tokens'
+            buttonState.disabled = true
+        }
+        if (!isFetchingPrice && isAnyAmountMissing) buttonState.text = 'Select an Amount'
+        if (isAnyTokenMissing) buttonState.text = 'Select Token'
+
+        if (isFetchingPrice) {
+            buttonState.disabled = true
+        }
+
+        return <button
+            onClick={togglePreviewModal}
+            disabled={buttonState.disabled}
+            className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
+            {buttonState.text}
+        </button>
+    }, [isToken1Approved, isToken2Approved, isFetchingPrice, formData.from, formData.to, togglePreviewModal, token1, token2])
 
 
     const setInputVal = (name,value) => {
         setFormData(oldValues => ({...oldValues, [name]: value}));
-        submitButton()
     };
 
     // @todo generalize / duplicated in Create.js
@@ -144,9 +164,9 @@ const Index = () => {
     // //@todo hotfix - this code is bad, needs be refactored
     useEffect(
         () => {
-            if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+            if(!formData?.from || formData?.from === 0) setFormData(oldValues => ({...oldValues, "to": ''}));
 
-            if (token2.length > 0 && formData.from.length > 0) {
+            if (token2.length > 0 && formData?.from > 0) {
                 intervalRef.current = setTimeout(async () => {
                     setIsFetchingPrice(true);
                     setIsPairAvailable(false);
@@ -164,7 +184,7 @@ const Index = () => {
                             to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
                             setRoutes([[token1, token2, false]])
                         }
-                        setFormData(oldValues => ({...oldValues, ["to"]: to}));
+                        setFormData(oldValues => ({...oldValues, "to": to}));
                         if (to === 0 && formData.from > 0) {
                             setIsPairAvailable(true);
                         } else {
@@ -182,19 +202,18 @@ const Index = () => {
         [contract, crypto1?.decimal, crypto2?.decimal, formData?.from?.length, signer, token1, token2, token2?.length]
     );
 
-    // //@todo this code compliments the code above, needs to be refactored too
+    // //@todo this code compliments the code above, needs to be refactored too, this is terrible
     useEffect(() => {
-        if(!isFetchingPrice && !formData.from) {
-            setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+        if((!isFetchingPrice && !formData.from) || formData.from == 0) {
+            setFormData(oldValues => ({...oldValues, "to": ''}));
         }
     }, [formData?.from, isFetchingPrice])
 
     // End of refactor - dirty stage
 
-    useEffect(() => {
-        contractInitialize().then()
-        submitButton()
-    }, [token1,token2,crypto1,crypto2]);
+    // useEffect(() => {
+    //     contractInitialize().then()
+    // }, [token1,token2,crypto1,crypto2]);
 
     const checkAllowance = async () => {
         try {
@@ -614,16 +633,10 @@ const Index = () => {
                                             <span className="text-danger ps-2"> Pair is not available</span>
                                             : null
                                         }
-                                        { (isFetchingPrice) ?
-                                            <span className="ps-2">
-                                                <img src={fetchingLoader} height="20px" alt=""/>
-                                                &nbsp;Fetching best price...
-                                            </span>
-                                            : null
-                                        }
+
                                     </Col>
                                     <Col sm={12}>
-                                        {button1}
+                                        {submitButton}
                                     </Col>
                                 </Row>
                             </CardBody>
