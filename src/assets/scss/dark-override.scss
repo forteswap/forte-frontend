@@ -2,6 +2,15 @@ body.dark-mode {
 	.balance-card {
 		background-color: #303133;
 		border-color: #303133;
+
+		&.disabled {
+			background-color: #202123;
+
+			input {
+				opacity: 0.5;
+				cursor: auto;
+			}
+		}
 	}
 
 	.balance-card-swapper {

@@ -97,20 +97,3 @@ const decimalEnforcer = (nextUserInput: string) => {
 export const DecimalInput = forwardRef(function DecimalInput(props: NumericInputProps, ref) {
     return <NumericInput pattern="^[0-9]*[.,]?[0-9]*$" enforcer={decimalEnforcer} ref={ref as any} {...props} />
 })
-
-// export const inputCss = css`
-//   background-color: ${({ theme }) => theme.container};
-//   border: 1px solid ${({ theme }) => theme.container};
-//   border-radius: ${({ theme }) => theme.borderRadius}em;
-//   cursor: text;
-//   padding: calc(0.5em - 1px);
-//
-//   :hover:not(:focus-within) {
-//     background-color: ${({ theme }) => theme.onHover(theme.container)};
-//     border-color: ${({ theme }) => theme.onHover(theme.container)};
-//   }
-//
-//   :focus-within {
-//     border-color: ${({ theme }) => theme.active};
-//   }
-// `
