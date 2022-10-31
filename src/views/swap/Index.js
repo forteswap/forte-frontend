@@ -12,19 +12,15 @@ import {
     ModalHeader,
     Row
 } from "reactstrap";
+import { Input as NumericalInput } from '../../components/NumericalInput/index.tsx'
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
-import CryptoListModal from "../../components/modal/CryptoList";
-import React, {useState, useEffect,useCallback} from "react";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
-import SwapSetting from "../../components/modal/SwapSetting";
+import CryptoListModal from "../../components/modal/CryptoList.js";
+import React, {useState, useEffect, useCallback} from "react";
+import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
+import SwapSetting from "../../components/modal/SwapSetting.js";
 import settingImg from "../../assets/images/setting.svg";
-import {
-    APPROVAL_TOKENS,
-    balanceOfABI,
-    CONTRACT_ABI,
-    CONTRACT_ADDRESS,
-} from "../../config";
+import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import {
     getDeadline,
     isTokenApproved,
@@ -32,10 +28,12 @@ import {
     roundDownAndParse,
     roundDownForSwap,
     getEstimatedPriceImpact
-} from "../../helper";
+} from "../../helper.js";
 import detectEthereumProvider from "@metamask/detect-provider";
+import {useDebounce} from '../../hooks/useDebounce.ts'
 import {ethers} from "ethers";
-import {useGlobalModalContext} from "../../components/modal/GlobalModal";
+import {useGlobalModalContext} from "../../components/modal/GlobalModal.js";
+import TokenImage from "../../components/Image/token.tsx";
 
 const Index = () => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts, button;
@@ -102,15 +100,75 @@ const Index = () => {
         }
     }
 
+    const submitButton = () => {
+        if(token1.length <= 0  || token2.length <= 0 ){
+            button = <button className="btn btn-lg btn-primary align-items-center btn-starch fs-6 py-md-4 mt-md-3 btn-submit">
+                Select Token
+            </button>
+        }  else {
+            button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
+                Swap In
+            </button>
+        }
+
+        setButton1(button)
+    }
+
+
     const setInputVal = (name,value) => {
         setFormData(oldValues => ({...oldValues, [name]: value}));
         submitButton()
-        // calculateRate(name,value).then()
     };
 
-    useEffect(() => {
-        calculateRate().then()
-    }, [formData.from,token1,token2]);
+    //@todo this is probably unsafe, needs tests
+    const calculateRate = async (ignore) => {
+        if (!ignore) {
+            if (token2.length > 0 && formData.from.length > 0) {
+                setIsFetchingPrice(true);
+                setIsPairAvailable(false);
+                const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
+                await contractInitialize().then()
+                let to;
+                const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
+                const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
+                // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
+                if (stableRate && volatileRate) {
+                    if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
+                        to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                        setRoutes([[token1, token2, true]])
+                    } else {
+                        to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                        setRoutes([[token1, token2, false]])
+                    }
+                    setFormData(oldValues => ({...oldValues, ["to"]: to}));
+                    if (to === 0 && formData.from > 0) {
+                        setIsPairAvailable(true);
+                    } else {
+                        setIsPairAvailable(false);
+                    }
+                    setIsFetchingPrice(false);
+                }
+            }
+        }
+    }
+
+    useEffect( () => {
+        let ignore = false;
+        if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+
+        calculateRate(ignore)
+
+        return () => {
+            ignore = true;
+        };
+    }, [formData.from, token1, token2]);
+
+    // useEffect(() => {
+    //     // @todo this is a quickfix to handle emptying first input's value - unsafe, need to be done properly
+    //     if(!formData.from) setFormData(oldValues => ({...oldValues, ["to"]: ''}));
+    //
+    //     calculateRate().then()
+    // }, [formData.from, token1, token2]);
 
     useEffect(() => {
         contractInitialize().then()
@@ -431,11 +489,15 @@ const Index = () => {
                                     <Col sm={12} >
                                         <div className="balance-card">
                                             <div className="d-flex">
-                                                <Input autoComplete="off" type="text"
+                                                <NumericalInput
+                                                   autoComplete="off"
+                                                   type="number"
                                                    value={formData.from}
-                                                   onChange={(val) => setInputVal("from",val.target.value)}
-                                                   placeholder="0.00"
-                                                   spellCheck="false" className="form-control-coin"/>
+                                                   onUserInput={(value) => setInputVal("from", value)}
+                                                   placeholder="0"
+                                                   spellCheck="false"
+                                                   className="form-control-coin"
+                                                />
 
                                                 <div className="text-end">
                                                     <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
@@ -443,9 +505,7 @@ const Index = () => {
                                                         {
                                                             crypto1 ?
                                                                 <>
-                                                                    <img className="align-middle float-start coin-icon" height="28"
-                                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                                         alt="coinImg"/>
+                                                                    <TokenImage src={crypto1.icon}/>
                                                                     <span className="align-middle px-1"> {crypto1.name}</span>
                                                                     <img className="align-middle pe-md-2" height="20"
                                                                          src={downArrowImage} alt="coinImg"/>
@@ -476,10 +536,13 @@ const Index = () => {
                                         </div>
                                         <div className="balance-card">
                                             <div className="d-flex">
-                                                <Input autoComplete="off" type="text"
-                                                   value={formData.to} readOnly
-                                                   onChange={(val) => setInputVal("to",val.target.value)}
-                                                   placeholder="0.00"
+                                                <NumericalInput
+                                                   readOnly
+                                                   autoComplete="off"
+                                                   value={formData.to}
+                                                   type="number"
+                                                   onUserInput={(value) => setInputVal("to", value)}
+                                                   placeholder="0"
                                                    spellCheck="false" className="form-control-coin"/>
 
                                                 <div className="text-end">
@@ -488,9 +551,7 @@ const Index = () => {
                                                         {
                                                             crypto2 !== null ?
                                                                 <>
-                                                                    <img className="align-middle float-start" height="28"
-                                                                         src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                                         alt="coinImg"/>
+                                                                    <TokenImage src={crypto2.icon}/>
                                                                     <span className="align-middle ps-2 pe-2"> {crypto2.name}</span>
                                                                     <img className="align-middle pe-2" height="20"
                                                                          src={downArrowImage} alt="coinImg"/>
@@ -530,9 +591,7 @@ const Index = () => {
                                             {(crypto1 && !isToken1Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 me-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(1)}>
-                                                    <img className="align-middle float-start" height="28"
-                                                         src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto1.icon}/>
                                                     <span
                                                         className="align-middle flex-grow-1">Approve {crypto1.name}</span>
                                                 </button>
@@ -541,9 +600,7 @@ const Index = () => {
                                             {(crypto2 && !isToken2Approved) ?
                                                 <button className="btn btn-primary flex-grow-1 ms-1 pe-4 btn-approval"
                                                         onClick={() => tokenApproval(2)}>
-                                                    <img className="align-middle float-start" height="28"
-                                                         src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                         alt="coinImg"/>
+                                                    <TokenImage src={crypto2.icon}/>
                                                     <span
                                                         className="align-middle flex-grow-1">Approve {crypto2.name}</span>
                                                 </button>
@@ -589,9 +646,7 @@ const Index = () => {
                                                     <span className="align-middle coin-value">{formData.from}</span>
                                                     <div className="text-end">
                                                         <div className="align-items-center px-3">
-                                                            <img className="me-2 align-middle" alt="coinImg"
-                                                                 src={require("../../assets/images/coins/" + crypto1.icon)}
-                                                                 height="30" width="30"/>
+                                                            <TokenImage src={crypto1.icon}/>
                                                             <span className="align-middle coin-symbol">{crypto1.name}</span>
                                                         </div>
                                                     </div>
@@ -606,9 +661,7 @@ const Index = () => {
                                                     <span className="align-middle coin-value">{formData.to}</span>
                                                     <div className="text-end">
                                                         <div className="align-items-center px-3">
-                                                            <img className="me-2 align-middle" alt="coinImg"
-                                                                 src={require("../../assets/images/coins/" + crypto2.icon)}
-                                                                 height="30" width="30"/>
+                                                            <TokenImage src={crypto2.icon}/>
                                                             <span className="align-middle coin-symbol">{crypto2.name}</span>
                                                         </div>
                                                     </div>
