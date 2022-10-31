@@ -177,10 +177,6 @@ function Remove(props) {
                                             <span className="text-balance">
                                                 Balance: {currentPool.userLpBalance} LP Tokens
                                             </span>
-                                            <button className="btn button-max btn-sm ms-2"
-                                                    onClick={setLiquidityMax}>
-                                                Max
-                                            </button>
                                         </div>
                                     </div>
                                 </Col>

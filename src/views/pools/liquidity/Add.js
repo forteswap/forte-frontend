@@ -331,10 +331,6 @@ const Add = (props) => {
                                                 <span className="text-balance">
                                                     Balance: {token1Balance + ' ' + crypto1.name}
                                                 </span>
-                                                <button className="btn button-max btn-sm ms-2"
-                                                        onClick={() => setToken1Max(token1Balance)}>
-                                                    Max
-                                                </button>
                                             </div>
                                         </div>
                                         <div className="balance-card-swapper">
@@ -361,10 +357,6 @@ const Add = (props) => {
                                                 <span className="text-balance">
                                                     Balance: {token2Balance + ' ' + crypto2.name}
                                                 </span>
-                                                <button className="btn button-max btn-sm ms-2"
-                                                        onClick={() => setToken2Max(token2Balance)}>
-                                                    Max
-                                                </button>
                                             </div>
                                         </div>
                                     </Col>
