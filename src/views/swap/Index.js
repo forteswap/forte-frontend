@@ -15,22 +15,27 @@ import {
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect,useCallback} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import SwapSetting from "../../components/modal/SwapSetting";
 import settingImg from "../../assets/images/setting.svg";
-import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
+import {
+    APPROVAL_TOKENS,
+    balanceOfABI,
+    CONTRACT_ABI,
+    CONTRACT_ADDRESS,
+} from "../../config";
 import {
     getDeadline,
     isTokenApproved,
     roundDown,
     roundDownAndParse,
-    roundDownForSwap
+    roundDownForSwap,
+    getEstimatedPriceImpact
 } from "../../helper";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {ethers} from "ethers";
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
-import {Link} from "react-router-dom";
 
 const Index = () => {
     let signer, web3Provider, erc20ContractToken1, erc20ContractToken2, contract, accounts, button;
@@ -45,6 +50,10 @@ const Index = () => {
     const [previewModal, setPreviewModal] = useState(false);
     const [cryptoModal1, setCryptoModal1] = useState(false);
     const [cryptoModal2, setCryptoModal2] = useState(false);
+    const [priceImpact, setPriceImpact] = useState({
+        priceImpactPercent: 0,
+        severity: 1
+    });
     // const [walletModal, setWalletModal] = useState(false);
     const [settingModal, setSettingModal] = useState(false);
     const [token1Balance, setToken1Balance] = useState(0);
@@ -57,6 +66,8 @@ const Index = () => {
     const [button1, setButton1] = useState("");
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
+
+    const shouldShowPriceImpact = priceImpact.priceImpactPercent !== 0;
 
     const toggleCryptoModal1 = () => setCryptoModal1(!cryptoModal1);
     const toggleCryptoModal2 = () => setCryptoModal2(!cryptoModal2);
@@ -221,7 +232,7 @@ const Index = () => {
         setButton1(button)
     }
 
-    const calculateRate = async () => {
+    const calculateRate = useCallback(async () => {
         if (token2.length > 0 && formData.from.length > 0) {
             setIsFetchingPrice(true);
             setIsPairAvailable(false);
@@ -230,17 +241,36 @@ const Index = () => {
             let to;
             const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
             const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
-            // console.log(token1, token2, volatileRate[0].toString(), stableRate[1].toString(), volatileRate[1])
+
+            let amountOut;
+            let tinyAmountOut;
+            const tinyPriceDivisor = 1000;
+            const tinyStableRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, true]]);
+            const tinyVolatileRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, false]]);
+
             if (stableRate && volatileRate) {
-                if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
+                if (stableRate[1].gt(volatileRate[1])) {
                     to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                    amountOut = stableRate[1];
+                    tinyAmountOut = tinyStableRate[1];
                     setRoutes([[token1, token2, true]])
                 } else {
                     to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                    amountOut = volatileRate[1];
+                    tinyAmountOut = tinyVolatileRate[1];
                     setRoutes([[token1, token2, false]])
                 }
                 setFormData(oldValues => ({...oldValues, ["to"]: to}));
+
+                const {priceImpactPercent, severity} = getEstimatedPriceImpact(parseValue, parseValue.div(tinyPriceDivisor), amountOut, tinyAmountOut, crypto1.decimal, crypto2.decimal)
+
+                setPriceImpact({
+                    priceImpactPercent,
+                    severity
+                });
+
                 if (to == 0 && formData.from > 0) {
+
                     setIsPairAvailable(true);
                 } else {
                     setIsPairAvailable(false);
@@ -248,7 +278,7 @@ const Index = () => {
                 setIsFetchingPrice(false);
             }
         }
-    }
+    }, [contract, crypto1?.decimal, crypto1?.name, crypto2?.decimal, crypto2?.name, formData?.from, signer, token1, token2])
 
     const swapIn = async () => {
         const slippage = localStorage.getItem('forteSlippage');
@@ -476,8 +506,19 @@ const Index = () => {
                                             </div>
                                             {
                                                 crypto2 ?
-                                                    <div className="text-end">
-                                                        <span className="text-balance">
+                                                    <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.75rem', fontSize: '14px'}}>
+                                                        {
+                                                            (shouldShowPriceImpact) &&
+                                                                <span>
+                                                                    <span>price impact: </span>
+                                                                    <span
+                                                                        style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
+                                                                    >
+                                                                        ~{priceImpact.priceImpactPercent}%
+                                                                    </span>
+                                                                </span>
+                                                        }
+                                                        <span className="text-balance" style={{marginLeft: 'auto'}}>
                                                             Balance: {token2Balance + ' ' + crypto2.name}
                                                         </span>
                                                     </div> : ""
@@ -530,12 +571,10 @@ const Index = () => {
                         </Card>
                     </Col>
 
-                    {/*Info: Preview Modal */}
                     <Modal isOpen={previewModal} backdrop={true} keyboard={false} centered={true}>
                         <ModalHeader toggle={togglePreviewModal}>Confirm Swap</ModalHeader>
                         <ModalBody>
                             <Row>
-                                {/*<Col sm={12}>{JSON.stringify(formData)}</Col>*/}
                                 {token1 && token2 ?
                                     <>
                                         <div className="d-flex justify-content-between mb-3">
@@ -578,24 +617,17 @@ const Index = () => {
                                         </Col>
                                     </>: ""
                                 }
-                                <Col sm={12} className="mt-4">
+                                {shouldShowPriceImpact && <Col sm={12} className="mt-4">
                                     <div className="h6">Transaction Summary</div>
                                     <hr className="mt-4"/>
                                     <div className="d-flex justify-content-between">
                                         <span className="text-secondary">Price Impact</span>
-                                        <span className="text-end">--</span>
+                                        <span className="text-end">
+                                            <span
+                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : null}`}}>~{priceImpact.priceImpactPercent}%</span>
+                                        </span>
                                     </div>
-                                    <div className="d-flex justify-content-between">
-                                        <span className="text-secondary">Network Fee</span>
-                                        <span className="text-end">--</span>
-                                    </div>
-                                </Col>
-                                <Col sm={12} className="mt-4">
-                                    <div className="d-flex justify-content-between">
-                                        <p className="fw-bold">Minimum received after slippage</p>
-                                        {/*<span className="text-end">{crypto2.name}</span>*/}
-                                    </div>
-                                </Col>
+                                </Col>}
                             </Row>
                         </ModalBody>
                         <ModalFooter className="with-bg full-btn">

@@ -1,10 +1,15 @@
-import {CHUNK_SIZE, CONTRACT_ADDRESS, DEADLINE_MINUTES, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "./config";
-import {cryptoCoinsEnum, modalTypesEnum} from "./staticData";
+import {
+    CHUNK_SIZE,
+    CONTRACT_ADDRESS,
+    DEADLINE_MINUTES,
+    PAIR_CONTRACT_ADDRESS,
+    PAIR_FACTORY_ABI
+} from "./config";
+import {cryptoCoinsEnum} from "./staticData";
 import {ethers} from "ethers";
 import {batch} from "react-redux";
 import store from "./redux/store";
 import {fetchPoolData} from "./redux/actions";
-import {useGlobalModalContext} from "./components/modal/GlobalModal";
 
 const Snackbar = require('node-snackbar');
 
@@ -34,6 +39,37 @@ export function getNumberValueForTest(value,decimal= 18) {
 export async function isTokenApproved(contract, owner, spender = CONTRACT_ADDRESS) {
     const checkAllowance = await contract.allowance(owner, spender);
     return getNumberValue(checkAllowance,18) > 0
+}
+
+export const getEstimatedPriceImpact = (amountIn, tinyAmountIn, amountOut, tinyAmountOut, decimalsA, decimalsB) => {
+    const getParsedPricePerUnit = (amountA, amountB, decimalsA, decimalsB) => {
+        return ethers.utils.parseUnits(amountA.toString(), decimalsA) / ethers.utils.parseUnits(amountB.toString(), decimalsB);
+    }
+
+    const pricePerUnit = getParsedPricePerUnit(amountOut, amountIn, decimalsB, decimalsA);
+    const tinyPricePerUnit = getParsedPricePerUnit(tinyAmountOut, tinyAmountIn, decimalsB, decimalsA);
+
+    let priceImpactPercent = Number(((tinyPricePerUnit - pricePerUnit) / tinyPricePerUnit * 100).toLocaleString(undefined, {maximumFractionDigits: 2}))
+
+    if(isNaN(priceImpactPercent) || priceImpactPercent <= 0) priceImpactPercent = 0;
+
+    let severity;
+
+    switch (true) {
+        case priceImpactPercent > 1 && priceImpactPercent < 5:
+            severity = 2
+            break;
+        case priceImpactPercent >= 5:
+            severity = 3
+            break;
+        default:
+            severity = 1
+    }
+
+    return {
+        priceImpactPercent,
+        severity
+    }
 }
 
 export const getPoolData = async () => {
