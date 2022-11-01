@@ -29,7 +29,7 @@ const Notice = () => {
     }, [provider])
 
     return (
-        !hasUserOptedOut && <div style={{backgroundColor: '#ebbe67', color: '#272179', padding: '1rem 2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        !hasUserOptedOut && <div style={{backgroundColor: '#ebbe67', color: '#272179', padding: '1rem 2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem'}}>
             <div>
 
             We recommend connecting using the <span style={{fontWeight: 'bold', cursor: 'pointer'}}
