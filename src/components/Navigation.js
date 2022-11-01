@@ -23,7 +23,7 @@ const Navigation = () => {
         }
     }, []);
 
-    window.ethereum.on('accountsChanged', function (accounts) {
+    window.ethereum?.on('accountsChanged', function (accounts) {
         if(account == null){
             window.localStorage.removeItem("forte-connected")
         }else {
