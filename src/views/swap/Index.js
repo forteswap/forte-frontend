@@ -13,7 +13,6 @@ import {
 } from "reactstrap";
 import { Input as NumericalInput } from '../../components/NumericalInput/index.tsx'
 import downArrowImage from "../../assets/images/down-arrow.svg";
-import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList.js";
 import React, {useState, useEffect, useRef, useMemo, useCallback} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData.js";
@@ -50,14 +49,13 @@ const Index = () => {
         priceImpactPercent: 0,
         severity: 1
     });
-    // const [walletModal, setWalletModal] = useState(false);
     const [settingModal, setSettingModal] = useState(false);
     const [token1Balance, setToken1Balance] = useState(0);
     const [token2Balance, setToken2Balance] = useState(0);
     const [confirmationWaitingModal, setConfirmationWaitingModal] = useState(false);
     const [isToken1Approved, setIsToken1Approved] = useState(false);
     const [isToken2Approved, setIsToken2Approved] = useState(false);
-    const [isPairAvailable, setIsPairAvailable] = useState(false);
+    const [isPairUnavailable, setIsPairUnavailable] = useState(false);
     const [isFetchingPrice, setIsFetchingPrice] = useState(false);
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
@@ -69,7 +67,6 @@ const Index = () => {
     const toggleSettingModal = () => setSettingModal(!settingModal);
     const togglePreviewModal = () => setPreviewModal(!previewModal);
     const toggleConfirmationWaitingModal = () => setConfirmationWaitingModal(!confirmationWaitingModal);
-    // const toggleWalletModal = () => setWalletModal(!walletModal);
     const waitForConfirmation = () => {
         togglePreviewModal();
         toggleConfirmationWaitingModal();
@@ -129,7 +126,7 @@ const Index = () => {
             className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
             {buttonState.text}
         </button>
-    }, [isToken1Approved, isToken2Approved, isFetchingPrice, formData.from, formData.to, togglePreviewModal, token1, token2])
+    }, [isToken1Approved, isToken2Approved, isFetchingPrice, formData.from, formData.to, token1, token2])
 
 
     const setInputVal = (name,value) => {
@@ -167,14 +164,14 @@ const Index = () => {
             if (token2.length > 0 && formData?.from > 0) {
                 intervalRef.current = setTimeout(async () => {
                     setIsFetchingPrice(true);
-                    setIsPairAvailable(false);
                     const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
                     await contractInitialize().then()
                     let to;
                     const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
                     const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
+
                     if (stableRate && volatileRate) {
-                        if (Number(stableRate[1].toString()) > Number(volatileRate[1].toString())) {
+                        if (stableRate[1].gt(volatileRate[1])) {
                             to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
                             setRoutes([[token1, token2, true]])
                         } else {
@@ -182,11 +179,6 @@ const Index = () => {
                             setRoutes([[token1, token2, false]])
                         }
                         setFormData(oldValues => ({...oldValues, "to": to}));
-                        if (to === 0 && formData.from > 0) {
-                            setIsPairAvailable(true);
-                        } else {
-                            setIsPairAvailable(false);
-                        }
                         setIsFetchingPrice(false);
                     }
                 }, 400);
@@ -201,10 +193,23 @@ const Index = () => {
 
     // //@todo this code compliments the code above, needs to be refactored too, this is terrible
     useEffect(() => {
-        if((!isFetchingPrice && !formData.from) || formData.from == 0) {
+        if(isFetchingPrice) return
+
+        if(!formData.from || formData.from == 0) {
             setFormData(oldValues => ({...oldValues, "to": ''}));
         }
     }, [formData?.from, isFetchingPrice])
+
+    // @todo unsafe, bigNumbers will sort this out
+    useEffect(() => {
+        if(isFetchingPrice) return
+
+        if(formData.from && (!formData?.to || formData?.to === '0.0')) {
+            return setIsPairUnavailable(true)
+        }
+
+        return setIsPairUnavailable(false)
+    }, [formData?.from, formData?.to, isFetchingPrice])
 
     const checkAllowance = async () => {
         try {
@@ -535,10 +540,6 @@ const Index = () => {
                                                 <span className="text-balance">
                                                     Balance: {token1Balance + ' ' + crypto1.name}
                                                 </span>
-                                                <button className="btn btn-outline-light btn-sm ms-2 fw-normal button-max"
-                                                        onClick={() => setInputVal("from",token1Balance)}>
-                                                    Max
-                                                </button>
                                             </div>
                                         </div>
                                         <div className="balance-card-swapper">
@@ -546,7 +547,7 @@ const Index = () => {
                                                 <img src={downArrowImage} alt="coinImg" height="18" width="18"/>
                                             </div>
                                         </div>
-                                        <div className="balance-card">
+                                        <div className="balance-card disabled">
                                             <div className="d-flex">
                                                 <NumericalInput
                                                    readOnly
@@ -619,13 +620,13 @@ const Index = () => {
                                                 : null}
                                         </div>
                                     </Col>
-                                    <Col sm={12}>
-                                        { (isPairAvailable) ?
-                                            <span className="text-danger ps-2"> Pair is not available</span>
+                                        {
+                                            (isPairUnavailable) ?
+                                                <Col sm={12}>
+                                                    <span className="text-danger ps-2"> The pair is not available.</span>
+                                                </Col>
                                             : null
                                         }
-
-                                    </Col>
                                     <Col sm={12}>
                                         {submitButton}
                                     </Col>
