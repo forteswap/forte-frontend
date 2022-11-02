@@ -202,7 +202,7 @@ const Index = () => {
                     }
                     setIsFetchingPrice(false);
 
-                }, 400);
+                }, 1000);
             } else {
                 clearTimeout(intervalRef.current);
             }
