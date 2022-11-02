@@ -60,7 +60,9 @@ const Index = () => {
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
 
-    const shouldShowPriceImpact = priceImpact.priceImpactPercent !== 0;
+    const shouldShowPriceImpact = useMemo(() => {
+        return formData?.to && priceImpact.priceImpactPercent !== 0;
+    }, [formData?.to, priceImpact.priceImpactPercent])
 
     const toggleCryptoModal1 = () => setCryptoModal1(!cryptoModal1);
     const toggleCryptoModal2 = () => setCryptoModal2(!cryptoModal2);
@@ -159,28 +161,47 @@ const Index = () => {
     // //@todo hotfix - this code is bad, needs be refactored
     useEffect(
         () => {
+            setIsFetchingPrice(true);
+
             if(!formData?.from || formData?.from === 0) setFormData(oldValues => ({...oldValues, "to": ''}));
 
             if (token2.length > 0 && formData?.from > 0) {
                 intervalRef.current = setTimeout(async () => {
-                    setIsFetchingPrice(true);
                     const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
                     await contractInitialize().then()
                     let to;
                     const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
                     const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
 
+                    let amountOut;
+                    let tinyAmountOut;
+                    const tinyPriceDivisor = 1000;
+                    const tinyStableRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, true]]);
+                    const tinyVolatileRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, false]]);
+
                     if (stableRate && volatileRate) {
                         if (stableRate[1].gt(volatileRate[1])) {
                             to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                            amountOut = stableRate[1];
+                            tinyAmountOut = tinyStableRate[1];
                             setRoutes([[token1, token2, true]])
                         } else {
                             to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                            amountOut = volatileRate[1];
+                            tinyAmountOut = tinyVolatileRate[1];
                             setRoutes([[token1, token2, false]])
                         }
                         setFormData(oldValues => ({...oldValues, "to": to}));
-                        setIsFetchingPrice(false);
+
+                        const {priceImpactPercent, severity} = getEstimatedPriceImpact(parseValue, parseValue.div(tinyPriceDivisor), amountOut, tinyAmountOut, crypto1.decimal, crypto2.decimal)
+
+                        setPriceImpact({
+                            priceImpactPercent,
+                            severity
+                        });
                     }
+                    setIsFetchingPrice(false);
+
                 }, 400);
             } else {
                 clearTimeout(intervalRef.current);
@@ -202,9 +223,7 @@ const Index = () => {
 
     // @todo unsafe, bigNumbers will sort this out
     useEffect(() => {
-        if(isFetchingPrice) return
-
-        if(formData.from && (!formData?.to || formData?.to === '0.0')) {
+        if(!isFetchingPrice && formData.from && (!formData?.to || formData?.to === '0.0')) {
             return setIsPairUnavailable(true)
         }
 
@@ -292,68 +311,6 @@ const Index = () => {
             setInputVal( "from", formData.to)
         }
     }
-
-    const submitButton = () => {
-        if(token1.length <= 0  || token2.length <= 0 ){
-            button = <button className="btn btn-lg btn-primary align-items-center btn-starch fs-6 py-md-4 mt-md-3 btn-submit">
-                Select Token
-            </button>
-        }  else {
-            button = <button onClick={togglePreviewModal} className="btn btn-lg btn-primary align-items-center btn-starch fs-6  py-md-4 py-xs-2  mt-md-3  btn-submit">
-                Swap In
-            </button>
-        }
-
-        setButton1(button)
-    }
-
-    const calculateRate = useCallback(async () => {
-        if (token2.length > 0 && formData.from.length > 0) {
-            setIsFetchingPrice(true);
-            setIsPairAvailable(false);
-            const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
-            await contractInitialize().then()
-            let to;
-            const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
-            const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
-
-            let amountOut;
-            let tinyAmountOut;
-            const tinyPriceDivisor = 1000;
-            const tinyStableRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, true]]);
-            const tinyVolatileRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, false]]);
-
-            if (stableRate && volatileRate) {
-                if (stableRate[1].gt(volatileRate[1])) {
-                    to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
-                    amountOut = stableRate[1];
-                    tinyAmountOut = tinyStableRate[1];
-                    setRoutes([[token1, token2, true]])
-                } else {
-                    to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
-                    amountOut = volatileRate[1];
-                    tinyAmountOut = tinyVolatileRate[1];
-                    setRoutes([[token1, token2, false]])
-                }
-                setFormData(oldValues => ({...oldValues, ["to"]: to}));
-
-                const {priceImpactPercent, severity} = getEstimatedPriceImpact(parseValue, parseValue.div(tinyPriceDivisor), amountOut, tinyAmountOut, crypto1.decimal, crypto2.decimal)
-
-                setPriceImpact({
-                    priceImpactPercent,
-                    severity
-                });
-
-                if (to == 0 && formData.from > 0) {
-
-                    setIsPairAvailable(true);
-                } else {
-                    setIsPairAvailable(false);
-                }
-                setIsFetchingPrice(false);
-            }
-        }
-    }, [contract, crypto1?.decimal, crypto1?.name, crypto2?.decimal, crypto2?.name, formData?.from, signer, token1, token2])
 
     const swapIn = async () => {
         const slippage = localStorage.getItem('forteSlippage');
@@ -580,7 +537,7 @@ const Index = () => {
                                             </div>
                                             {
                                                 crypto2 ?
-                                                    <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.75rem', fontSize: '14px'}}>
+                                                    <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.25rem', fontSize: '14px'}}>
                                                         {
                                                             (shouldShowPriceImpact) &&
                                                                 <span>
@@ -623,7 +580,7 @@ const Index = () => {
                                         {
                                             (isPairUnavailable) ?
                                                 <Col sm={12}>
-                                                    <span className="text-danger ps-2"> The pair is not available.</span>
+                                                    <span className="ps-2" style={{color: 'rgb(253, 118, 107)'}}> The pair is not available.</span>
                                                 </Col>
                                             : null
                                         }

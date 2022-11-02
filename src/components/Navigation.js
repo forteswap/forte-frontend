@@ -50,7 +50,7 @@ const Navigation = () => {
                 setAccount(accounts[0]);
                 window.localStorage.setItem("forte-connected", "injected");
             } else {
-                displayErrorMessage("Please connect wallet first!");
+                displayErrorMessage("Please make sure you have Metamask plugin installed.");
             }
         } catch (switchError) {
             if (switchError.code === 4901) {
