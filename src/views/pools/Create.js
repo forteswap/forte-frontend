@@ -22,7 +22,8 @@ import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../config";
 import CryptoListModal from "../../components/modal/CryptoList";
-import {isTokenApproved,roundDown,roundDownAndParse} from "../../helper";
+import {isTokenApproved, roundDownAndParse} from "../../helper";
+import { formatUnits } from '../../utils/formatUnits';
 
 const {ethers} = require('ethers');
 const Create = () => {
@@ -47,8 +48,14 @@ const Create = () => {
         amountADesired: "",
         amountBDesired: "",
     });
-    const [token1Balance, setToken1Balance] = useState(0);
-    const [token2Balance, setToken2Balance] = useState(0);
+    const [token1Balance, setToken1Balance] = useState({
+        raw: '0',
+        parsedForView: '0'
+    });
+    const [token2Balance, setToken2Balance] = useState({
+        raw: '0',
+        parsedForView: '0'
+    });
     const toggleCryptoModal1 = () => setCryptoModal1(!cryptoModal1);
     const toggleCryptoModal2 = () => setCryptoModal2(!cryptoModal2);
     const waitForConfirmation = () => {
@@ -64,7 +71,10 @@ const Create = () => {
         switch (type) {
             case 1:
                 if(value) {
-                    setToken1Balance(0);
+                    setToken1Balance({
+                        raw: '0',
+                        parsedForView: '0'
+                    });
                     setToken1(value.address);
                     setCrypto1(value);
                 }
@@ -72,7 +82,10 @@ const Create = () => {
                 break;
             case 2:
                 if(value) {
-                    setToken2Balance(0);
+                    setToken2Balance({
+                        raw: '0',
+                        parsedForView: '0'
+                    });
                     setToken2(value.address);
                     setCrypto2(value);
                 }
@@ -116,9 +129,16 @@ const Create = () => {
 
                 if (BalanceOfToken1.toString() > 0) {
                     const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                    setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
+
+                    setToken1Balance(previousState => ({...previousState,
+                        raw: formatUnits(BalanceOfToken1, decimalOfToken1),
+                        parsedForView: formatUnits(BalanceOfToken1, decimalOfToken1, true)
+                    }));
                 } else {
-                    setToken1Balance(0);
+                    setToken1Balance(previousState => ({...previousState,
+                        raw: '0',
+                        parsedForView: '0'
+                    }));
                 }
             }
             if(token2 !== ""){
@@ -127,9 +147,16 @@ const Create = () => {
                 setIsToken2Approved(BalanceOfToken22);
                 if (BalanceOfToken2.toString() > 0) {
                     const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                    setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
+
+                    setToken2Balance(previousState => ({...previousState,
+                        raw: formatUnits(BalanceOfToken2, decimalOfToken2),
+                        parsedForView: formatUnits(BalanceOfToken2, decimalOfToken2, true)
+                    }));
                 }else {
-                    setToken2Balance(0);
+                    setToken2Balance(previousState => ({...previousState,
+                        raw: '0',
+                        parsedForView: '0'
+                    }));
                 }
             }
 
@@ -338,10 +365,10 @@ const Create = () => {
                                             </div>
                                             <div className="text-end">
                                                 <span className="text-balance">
-                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                    Balance: {token1Balance.parsedForView + ' ' + crypto1.name}
                                                 </span>
                                                 <button className="btn button-max btn-sm ms-2"
-                                                        onClick={() => setToken1Max(token1Balance)}>
+                                                        onClick={() => setToken1Max(token1Balance.raw)}>
                                                     Max
                                                 </button>
                                             </div>
@@ -356,7 +383,7 @@ const Create = () => {
                                                 <Input autoComplete="off" type="text"
                                                    value={formData.amountBDesired}
                                                    onChange={setInputVal("amountBDesired")}
-                                                   placeholder="0.00" max={token2Balance}
+                                                   placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin"/>
                                                 <div className="text-end">
                                                 <button className="btn btn-forte-image py-md-2 px-md-3 ms-auto"
@@ -388,9 +415,9 @@ const Create = () => {
                                                     crypto2 ?
                                                         <div>
                                                             <span className="text-balance">
-                                                                Balance: {token2Balance + ' ' + crypto2.name}
+                                                                Balance: {token2Balance.parsedForView + ' ' + crypto2.name}
                                                             </span>
-                                                            <button onClick={() => setToken2Max(token2Balance)}
+                                                            <button onClick={() => setToken2Max(token2Balance.raw)}
                                                                     className="btn button-max btn-sm ms-2">
                                                                 Max
                                                             </button>
