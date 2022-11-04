@@ -125,7 +125,8 @@ function Remove(props) {
     }
 
     const setLiquidityMax = () => {
-        setFormData(oldValues => ({...oldValues, ["liquidity"]: currentPool.userLpBalance.toString()}));
+        if (!currentPool?.userLpBalance) return;
+        setFormData(oldValues => ({...oldValues, "liquidity": currentPool.userLpBalance.toString()}));
     };
 
     return (

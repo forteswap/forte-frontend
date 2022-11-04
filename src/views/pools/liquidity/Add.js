@@ -19,12 +19,13 @@ import leftArrowImage from "../../../assets/images/left-arrow.svg";
 import addImage from '../../../assets/images/add.svg';
 import infoImage from '../../../assets/images/info.svg';
 import React, {useEffect, useRef, useState} from "react";
-import {cryptoCoinsEnum, modalTypesEnum} from "../../../staticData";
+import {modalTypesEnum} from "../../../staticData";
 import detectEthereumProvider from "@metamask/detect-provider";
 import {useParams} from "react-router";
 import {APPROVAL_TOKENS, balanceOfABI, CONTRACT_ABI, CONTRACT_ADDRESS} from "../../../config";
 import collect from "collect.js";
-import {getNumberValue, getTokenData, isTokenApproved, roundDown, roundDownAndParse} from "../../../helper";
+import {getTokenData, isTokenApproved, roundDownAndParse} from "../../../helper";
+import { formatUnits } from '../../../utils/formatUnits';
 import {connect} from "react-redux";
 
 const {ethers} = require('ethers');
@@ -53,8 +54,8 @@ const Add = (props) => {
     const [isToken1Approved, setIsToken1Approved] = useState(false);
     const [isToken2Approved, setIsToken2Approved] = useState(false);
     const [isNativeCANTO, setNativeCanto] = useState(false);
-    const [poolAmountToken1, setPoolAmountToken1] = useState(0);
-    const [poolAmountToken2, setPoolAmountToken2] = useState(0);
+    const [poolAmountToken1, setPoolAmountToken1] = useState('0.0');
+    const [poolAmountToken2, setPoolAmountToken2] = useState('0.0');
     const token1Input = useRef(null);
     const token2Input = useRef(null);
     // const unlimitedToken = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -66,8 +67,15 @@ const Add = (props) => {
         amountADesired: "",
         amountBDesired: "",
     });
-    const [token1Balance, setToken1Balance] = useState(0);
-    const [token2Balance, setToken2Balance] = useState(0);
+    // @todo refactor: remove repetition
+    const [token1Balance, setToken1Balance] = useState({
+        raw: '0.0',
+        parsedForView: '0.0'
+    });
+    const [token2Balance, setToken2Balance] = useState({
+        raw: '0.0',
+        parsedForView: '0.0'
+    });
 
     const waitForConfirmation = () => {
         togglePreviewModal();
@@ -80,22 +88,22 @@ const Add = (props) => {
         }
     }, [currentPool]);
 
-    const setInputVal = (name) => {
-        return ({target: {value}}) => {
-            setFormData(oldValues => ({...oldValues, [name]: value}));
-            if (name === "amountADesired") {
-                const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
-                setFormData(oldValues => ({
-                    ...oldValues,
-                    ['amountBDesired']: isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2).toString()
-                }));
-            } else {
-                const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
-                setFormData(oldValues => ({
-                    ...oldValues,
-                    ['amountADesired']: isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1).toString()
-                }));
-            }
+
+    // @todo refactor: remove repetition, create it in a quality way
+    const setInputVal = (name, value) => {
+        setFormData(oldValues => ({...oldValues, [name]: value}));
+        if (name === "amountADesired") {
+            const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
+            setFormData(oldValues => ({
+                ...oldValues,
+                'amountBDesired': isNaN(value * priceRatioForToken2) ? 0 : (value * priceRatioForToken2).toString()
+            }));
+        } else {
+            const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
+            setFormData(oldValues => ({
+                ...oldValues,
+                'amountADesired': isNaN(value * priceRatioForToken1) ? 0 : (value * priceRatioForToken1).toString()
+            }));
         }
     };
 
@@ -131,14 +139,20 @@ const Add = (props) => {
             const poolAmountT2 = await erc20ContractToken2.balanceOf(currentPool.pairAddress);
             if (BalanceOfToken1.toString()) {
                 const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
-                setPoolAmountToken1(getNumberValue(poolAmountT1, decimalOfToken1));
+                setToken1Balance(previousState => ({...previousState,
+                    raw: formatUnits(BalanceOfToken1, decimalOfToken1),
+                    parsedForView: formatUnits(BalanceOfToken1, decimalOfToken1, true)
+                }));
+                setPoolAmountToken1(formatUnits(poolAmountT1, decimalOfToken1));
             }
 
             if (BalanceOfToken2.toString()) {
                 const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
-                setPoolAmountToken2(getNumberValue(poolAmountT2, decimalOfToken2));
+                setToken2Balance(previousState => ({...previousState,
+                    raw: formatUnits(BalanceOfToken2, decimalOfToken2),
+                    parsedForView: formatUnits(BalanceOfToken2, decimalOfToken2, true)
+                }));
+                setPoolAmountToken2(formatUnits(poolAmountT2, decimalOfToken2));
             }
         } catch (e) {
             console.log(e);
@@ -251,24 +265,6 @@ const Add = (props) => {
         }
     }
 
-    const setToken1Max = (val) => {
-        setFormData(oldValues => ({...oldValues, ["amountADesired"]: val.toString()}));
-            const priceRatioForToken2 = poolAmountToken2 / poolAmountToken1;
-            setFormData(oldValues => ({
-                ...oldValues,
-                ['amountBDesired']: isNaN(val * priceRatioForToken2) ? 0 : (val * priceRatioForToken2).toString()
-            }));
-        }
-
-    const setToken2Max = (val) => {
-        setFormData(oldValues => ({...oldValues, ["amountBDesired"]: val.toString()}));
-        const priceRatioForToken1 = poolAmountToken1 / poolAmountToken2;
-            setFormData(oldValues => ({
-                ...oldValues,
-                ['amountADesired']: isNaN(val * priceRatioForToken1) ? 0 : (val * priceRatioForToken1).toString()
-            }));
-        }
-
     const handleCheckbox = (val) => {
         setNativeCanto(val.target.checked);
     }
@@ -303,7 +299,7 @@ const Add = (props) => {
                                     <Col md={12}>
                                         <p className="mt-4 card-text text-justify">
                                             When you add liquidity, you will receive pool tokens representing your position.
-                                            These tokens automatically earn proportional to your share of the pool and can be
+                                            These tokens automatically earn fees proportional to your share of the pool and can be
                                             redeemed at any time.
                                         </p>
                                     </Col>
@@ -316,8 +312,9 @@ const Add = (props) => {
                                             <div className="d-flex">
                                                 <Input autoComplete="off" type="text"
                                                    value={formData.amountADesired}
-                                                   onChange={setInputVal("amountADesired")}
+                                                   onChange={(value) => setInputVal("amountADesired", value.target.value)}
                                                    placeholder="0.00"
+                                                   max={token1Balance.raw}
                                                    spellCheck="false" className="form-control-coin" ref={token1Input}/>
 
                                                 <div className="text-end">
@@ -331,25 +328,24 @@ const Add = (props) => {
                                             </div>
                                             <div className="text-end">
                                                 <span className="text-balance">
-                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                    {token1Balance.parsedForView + ' ' + crypto1.name}
                                                 </span>
-                                                <button className="btn button-max btn-sm ms-2"
-                                                        onClick={() => setToken1Max(token1Balance)}>
+                                                <button
+                                                    className="btn button-max btn-sm ms-2"
+                                                    onClick={() => {
+                                                        setInputVal("amountADesired", token1Balance.raw)
+                                                    }}
+                                                >
                                                     Max
                                                 </button>
-                                            </div>
-                                        </div>
-                                        <div className="balance-card-swapper">
-                                            <div className="balance-card-swapper-parent">
-                                                <img src={addImage} alt="add" height="32" width="32" className="mt-0"/>
                                             </div>
                                         </div>
                                         <div className="balance-card">
                                             <div className="d-flex">
                                                 <Input autoComplete="off" type="text"
                                                    value={formData.amountBDesired}
-                                                   onChange={setInputVal("amountBDesired")}
-                                                   placeholder="0.00" max={token2Balance}
+                                                   onChange={(value) => setInputVal("amountBDesired", value.target.value)}
+                                                   placeholder="0.00" max={token2Balance.raw}
                                                    spellCheck="false" className="form-control-coin" ref={token2Input}/>
 
                                                 <div className="text-end">
@@ -363,10 +359,14 @@ const Add = (props) => {
                                             </div>
                                             <div className="text-end">
                                                 <span className="text-balance">
-                                                    Balance: {token2Balance + ' ' + crypto2.name}
+                                                    {token2Balance.parsedForView + ' ' + crypto2.name}
                                                 </span>
-                                                <button className="btn button-max btn-sm ms-2"
-                                                        onClick={() => setToken2Max(token2Balance)}>
+                                                <button
+                                                    className="btn button-max btn-sm ms-2"
+                                                    onClick={() => {
+                                                        setInputVal("amountBDesired", token2Balance.raw)
+                                                    }}
+                                                >
                                                     Max
                                                 </button>
                                             </div>
