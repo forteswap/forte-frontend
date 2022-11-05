@@ -1,7 +1,10 @@
 body.dark-mode {
-	background-image: url("../images/background-dark.png");
 	background-repeat: no-repeat;
 	background-size: cover;
+
+	.bg-gradient-radial {
+		background-image: radial-gradient(rgb(45 44 108), #111829);
+	}
 
 	.balance-card {
 		background-color: #303133;

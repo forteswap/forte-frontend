@@ -26,6 +26,15 @@
 	scrollbar-height: 5px;
 }
 
+.bg-gradient-radial {
+	background-clip: border-box;
+	background-attachment: scroll;
+	z-index: -1;
+	inset: 0;
+	position: fixed;
+	pointer-events: none;
+}
+
 .navbar-inner {
 	float: right;
 }
