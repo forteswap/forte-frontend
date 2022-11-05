@@ -4,7 +4,4 @@ const path = require("path");
 
 module.exports = merge(config, {
     mode: "production",
-    output: {
-        filename: '[name].js',
-    },
 });
