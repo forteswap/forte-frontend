@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {displayErrorMessage, getPoolData} from "../helper";
-import logo from "../assets/images/forte_logo_white.png"
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import {useLocation} from "react-router";
@@ -92,7 +91,7 @@ const Navigation = () => {
             <div className="container-fluid">
                 <div className="header-left">
                     <a href="https://explain.forteswap.xyz/">
-                        <img src={logo} width="152" height="60" alt="logo" className="logo"/>
+                        <img src={require('../assets/images/forte_logo_white.png')} width="152" height="60" alt="logo" className="logo"/>
                     </a>
                 </div>
                 <div className="header-center text-center">

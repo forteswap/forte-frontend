@@ -28,11 +28,11 @@ import {
 import {
     getDeadline,
     isTokenApproved,
-    roundDown,
     roundDownAndParse,
     roundDownForSwap,
     getEstimatedPriceImpact
 } from "../../helper";
+import { formatUnits } from '../../utils/formatUnits';
 import detectEthereumProvider from "@metamask/detect-provider";
 import {ethers} from "ethers";
 import {useGlobalModalContext} from "../../components/modal/GlobalModal";
@@ -56,8 +56,15 @@ const Index = () => {
     });
     // const [walletModal, setWalletModal] = useState(false);
     const [settingModal, setSettingModal] = useState(false);
-    const [token1Balance, setToken1Balance] = useState(0);
-    const [token2Balance, setToken2Balance] = useState(0);
+    // @todo refactor: remove repetition
+    const [token1Balance, setToken1Balance] = useState({
+        raw: '0',
+        parsedForView: '0'
+    });
+    const [token2Balance, setToken2Balance] = useState({
+        raw: '0',
+        parsedForView: '0'
+    });
     const [confirmationWaitingModal, setConfirmationWaitingModal] = useState(false);
     const [isToken1Approved, setIsToken1Approved] = useState(false);
     const [isToken2Approved, setIsToken2Approved] = useState(false);
@@ -66,8 +73,6 @@ const Index = () => {
     const [button1, setButton1] = useState("");
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
-
-    const shouldShowPriceImpact = priceImpact.priceImpactPercent !== 0;
 
     const toggleCryptoModal1 = () => setCryptoModal1(!cryptoModal1);
     const toggleCryptoModal2 = () => setCryptoModal2(!cryptoModal2);
@@ -84,7 +89,10 @@ const Index = () => {
         switch (type) {
             case 1:
                 if(value) {
-                    setToken1Balance(0);
+                    setToken1Balance({
+                        raw: '0',
+                        parsedForView: '0'
+                    });
                     setToken1(value.address);
                     setCrypto1(value);
                 }
@@ -92,7 +100,10 @@ const Index = () => {
                 break;
             case 2:
                 if(value) {
-                    setToken2Balance(0);
+                    setToken2Balance({
+                        raw: '0',
+                        parsedForView: '0'
+                    });
                     setToken2(value.address);
                     setCrypto2(value);
                 }
@@ -139,19 +150,33 @@ const Index = () => {
     const checkAllowance = async () => {
         try {
             const cantoBalance = await web3Provider.getBalance(accounts[0]);
+
             if(token1 !== "") {
                 const BalanceOfToken11 = await isTokenApproved(erc20ContractToken1.connect(signer), accounts[0]);
+
                 setIsToken1Approved(BalanceOfToken11);
 
                 if(crypto1.title === cryptoCoinsEnum.canto.title){
-                    setToken1Balance(roundDown(cantoBalance));
-                }else {
+                    setToken1Balance(previousState => ({...previousState,
+                        raw: formatUnits(cantoBalance, crypto1.decimal),
+                        parsedForView: formatUnits(cantoBalance, crypto1.decimal, true)
+                    }));
+                }
+                else {
                     const BalanceOfToken1 = await erc20ContractToken1.connect(signer).balanceOf(accounts[0]);
+
                     if (BalanceOfToken1.toString() > 0) {
                         const decimalOfToken1 = await erc20ContractToken1.connect(signer).decimals();
-                        setToken1Balance(roundDown(BalanceOfToken1, decimalOfToken1));
+
+                        setToken1Balance(previousState => ({...previousState,
+                            raw: formatUnits(BalanceOfToken1, decimalOfToken1),
+                            parsedForView: formatUnits(BalanceOfToken1, decimalOfToken1, true)
+                        }));
                     } else {
-                        setToken1Balance(0);
+                        setToken1Balance(previousState => ({...previousState,
+                            raw: '0',
+                            parsedForView: '0'
+                        }));
                     }
                 }
             }
@@ -160,14 +185,24 @@ const Index = () => {
                 setIsToken2Approved(BalanceOfToken22);
 
                 if(crypto2.title === cryptoCoinsEnum.canto.title){
-                    setToken2Balance(roundDown(cantoBalance));
-                }else {
+                    setToken2Balance(previousState => ({...previousState,
+                        raw: formatUnits(cantoBalance, crypto2.decimal),
+                        parsedForView: formatUnits(cantoBalance, crypto2.decimal, true)
+                    }));
+                } else {
                     const BalanceOfToken2 = await erc20ContractToken2.connect(signer).balanceOf(accounts[0]);
                     if (BalanceOfToken2.toString() > 0) {
                         const decimalOfToken2 = await erc20ContractToken2.connect(signer).decimals();
-                        setToken2Balance(roundDown(BalanceOfToken2, decimalOfToken2));
-                    }else {
-                        setToken2Balance(0);
+
+                        setToken2Balance(previousState => ({...previousState,
+                            raw: formatUnits(BalanceOfToken2, decimalOfToken2),
+                            parsedForView: formatUnits(BalanceOfToken2, decimalOfToken2, true)
+                        }));
+                    } else {
+                        setToken2Balance(previousState => ({...previousState,
+                            raw: '0',
+                            parsedForView: '0'
+                        }));
                     }
                 }
             }
@@ -461,10 +496,11 @@ const Index = () => {
                                             </div>
                                             <div className="text-end">
                                                 <span className="text-balance">
-                                                    Balance: {token1Balance + ' ' + crypto1.name}
+                                                    Balance: {token1Balance.parsedForView + ' ' + crypto1.name}
                                                 </span>
-                                                <button className="btn btn-outline-light btn-sm ms-2 fw-normal button-max"
-                                                        onClick={() => setInputVal("from",token1Balance)}>
+                                                <button
+                                                    className="btn btn-outline-light btn-sm ms-2 fw-normal button-max"
+                                                    onClick={() => setInputVal("from", token1Balance.raw)}>
                                                     Max
                                                 </button>
                                             </div>
@@ -507,19 +543,16 @@ const Index = () => {
                                             {
                                                 crypto2 ?
                                                     <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.75rem', fontSize: '14px'}}>
-                                                        {
-                                                            (shouldShowPriceImpact) &&
-                                                                <span>
-                                                                    <span>price impact: </span>
-                                                                    <span
-                                                                        style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
-                                                                    >
-                                                                        ~{priceImpact.priceImpactPercent}%
-                                                                    </span>
-                                                                </span>
-                                                        }
+                                                        <span>
+                                                            <span>price impact: </span>
+                                                            <span
+                                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
+                                                            >
+                                                                ~{priceImpact.priceImpactPercent || '0'}%
+                                                            </span>
+                                                        </span>
                                                         <span className="text-balance" style={{marginLeft: 'auto'}}>
-                                                            Balance: {token2Balance + ' ' + crypto2.name}
+                                                            Balance: {token2Balance.parsedForView + ' ' + crypto2.name}
                                                         </span>
                                                     </div> : ""
                                             }
@@ -617,17 +650,17 @@ const Index = () => {
                                         </Col>
                                     </>: ""
                                 }
-                                {shouldShowPriceImpact && <Col sm={12} className="mt-4">
+                                <Col sm={12} className="mt-4">
                                     <div className="h6">Transaction Summary</div>
                                     <hr className="mt-4"/>
                                     <div className="d-flex justify-content-between">
                                         <span className="text-secondary">Price Impact</span>
                                         <span className="text-end">
                                             <span
-                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : null}`}}>~{priceImpact.priceImpactPercent}%</span>
+                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : null}`}}>~{priceImpact.priceImpactPercent || '0'}%</span>
                                         </span>
                                     </div>
-                                </Col>}
+                                </Col>
                             </Row>
                         </ModalBody>
                         <ModalFooter className="with-bg full-btn">
