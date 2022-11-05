@@ -67,8 +67,6 @@ const Index = () => {
     const [routes, setRoutes] = useState([]);
     const {showModal, hideModal} = useGlobalModalContext();
 
-    const shouldShowPriceImpact = priceImpact.priceImpactPercent !== 0;
-
     const toggleCryptoModal1 = () => setCryptoModal1(!cryptoModal1);
     const toggleCryptoModal2 = () => setCryptoModal2(!cryptoModal2);
     const toggleSettingModal = () => setSettingModal(!settingModal);
@@ -507,17 +505,14 @@ const Index = () => {
                                             {
                                                 crypto2 ?
                                                     <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.75rem', fontSize: '14px'}}>
-                                                        {
-                                                            (shouldShowPriceImpact) &&
-                                                                <span>
-                                                                    <span>price impact: </span>
-                                                                    <span
-                                                                        style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
-                                                                    >
-                                                                        ~{priceImpact.priceImpactPercent}%
-                                                                    </span>
-                                                                </span>
-                                                        }
+                                                        <span>
+                                                            <span>price impact: </span>
+                                                            <span
+                                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
+                                                            >
+                                                                ~{priceImpact.priceImpactPercent || '0'}%
+                                                            </span>
+                                                        </span>
                                                         <span className="text-balance" style={{marginLeft: 'auto'}}>
                                                             Balance: {token2Balance + ' ' + crypto2.name}
                                                         </span>
@@ -617,17 +612,17 @@ const Index = () => {
                                         </Col>
                                     </>: ""
                                 }
-                                {shouldShowPriceImpact && <Col sm={12} className="mt-4">
+                                <Col sm={12} className="mt-4">
                                     <div className="h6">Transaction Summary</div>
                                     <hr className="mt-4"/>
                                     <div className="d-flex justify-content-between">
                                         <span className="text-secondary">Price Impact</span>
                                         <span className="text-end">
                                             <span
-                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : null}`}}>~{priceImpact.priceImpactPercent}%</span>
+                                                style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : null}`}}>~{priceImpact.priceImpactPercent || '0'}%</span>
                                         </span>
                                     </div>
-                                </Col>}
+                                </Col>
                             </Row>
                         </ModalBody>
                         <ModalFooter className="with-bg full-btn">
