@@ -69,7 +69,7 @@ module.exports = {
         new HtmlWebpackPlugin(htmlWebpackConfig),
     ],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'build'),
         filename: '[name].[contenthash].js',
         pathinfo: false,
     },

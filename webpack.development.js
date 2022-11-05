@@ -13,7 +13,7 @@ module.exports = merge(config, {
             },
         },
         static: {
-            directory: path.resolve(__dirname, './dist')
+            directory: path.resolve(__dirname, './build')
         }
     },
     output: {
