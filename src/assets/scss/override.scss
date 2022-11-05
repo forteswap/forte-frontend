@@ -1,6 +1,9 @@
 body {
-	background-image: url("../images/background.png");
 	color: #5A5A5A;
+}
+
+.bg-gradient-radial {
+	background-image: radial-gradient(#ffffff, #dfdce8);
 }
 
 body:not(.dark-mode) {

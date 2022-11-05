@@ -7,13 +7,12 @@ import store from './redux/store';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from "react-router-dom";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root') as Element).render(
     <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </Provider>,
 );
 
 reportWebVitals();
