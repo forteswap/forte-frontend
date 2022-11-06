@@ -2,6 +2,7 @@
 import {ethers} from "ethers";
 import {balanceOfABI, PAIR_ABI, PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI} from "../config";
 import {collect} from "collect.js";
+import {BigNumber} from '@ethersproject/bignumber';
 import {cryptoCoinsEnum} from "../staticData";
 import {getNumberValue, getNumberValueForTest} from "../helper";
 
@@ -26,6 +27,7 @@ export const fetchPoolData = (pairs) => {
     return async dispatch => {
         try {
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = web3Provider.getSigner();
             const contract = new ethers.Contract(PAIR_CONTRACT_ADDRESS, PAIR_FACTORY_ABI, web3Provider);
             const systemTokens = collect(collect(cryptoCoinsEnum).values());
             const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
@@ -34,6 +36,8 @@ export const fetchPoolData = (pairs) => {
             let userWalletBalance = [];
             let userPoolAmount = [];
             let sharePer = [];
+            let token1Claim = BigNumber.from(0);
+            let token2Claim = BigNumber.from(0);
             for (const i of pairs) {
                 const LpAddress = await contract.allPairs(i);
                 const poolContract = new ethers.Contract(LpAddress, PAIR_ABI, web3Provider);
@@ -45,8 +49,12 @@ export const fetchPoolData = (pairs) => {
                 const poolSymbol = await poolContract.symbol();
                 const poolTokens = await poolContract.tokens();
                 const isStable = await poolContract.stable();
-                const token1Claim = await poolContract.claimable0(accounts[0]);
-                const token2Claim = await poolContract.claimable1(accounts[0]);
+                // @todo this is unsafe and bad
+                // eslint-disable-next-line no-loop-func
+                await poolContract.connect(signer).callStatic.claimFees().then((response) => {
+                    token1Claim = response.claimed0;
+                    token2Claim = response.claimed1;
+                });
                 const token1 = systemTokens.where('address',poolTokens[0]).first();
                 const token2 = systemTokens.where('address',poolTokens[1]).first();
 
