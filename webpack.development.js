@@ -12,6 +12,7 @@ module.exports = merge(config, {
                 errors: true,
             },
         },
+        historyApiFallback: true,
         static: {
             directory: path.resolve(__dirname, './build')
         }
