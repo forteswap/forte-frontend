@@ -6,12 +6,12 @@ import {
     CardTitle,
     Col,
     Container,
-    Input,
     Modal,
     ModalBody, ModalFooter,
     ModalHeader,
     Row
 } from "reactstrap";
+import Input from "../../components/NumericalInput";
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList";
@@ -468,7 +468,7 @@ const Index = () => {
                                             <div className="d-flex">
                                                 <Input autoComplete="off" type="text"
                                                    value={formData.from}
-                                                   onChange={(val) => setInputVal("from",val.target.value)}
+                                                   onUserInput={(value) => setInputVal("from", value)}
                                                    placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin"/>
 
@@ -514,7 +514,7 @@ const Index = () => {
                                             <div className="d-flex">
                                                 <Input autoComplete="off" type="text"
                                                    value={formData.to} readOnly
-                                                   onChange={(val) => setInputVal("to",val.target.value)}
+                                                   onUserInput={(value) => setInputVal("to", value)}
                                                    placeholder="0.00"
                                                    spellCheck="false" className="form-control-coin"/>
 
