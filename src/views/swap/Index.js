@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
     Button,
     Card,
@@ -15,7 +16,6 @@ import Input from "../../components/NumericalInput";
 import downArrowImage from "../../assets/images/down-arrow.svg";
 import fetchingLoader from "../../assets/images/fetchingLoader.gif";
 import CryptoListModal from "../../components/modal/CryptoList";
-import React, {useState, useEffect,useCallback} from "react";
 import {cryptoCoinsEnum, modalTypesEnum} from "../../staticData";
 import SwapSetting from "../../components/modal/SwapSetting";
 import settingImg from "../../assets/images/setting.svg";
@@ -66,8 +66,8 @@ const Index = () => {
         parsedForView: '0'
     });
     const [confirmationWaitingModal, setConfirmationWaitingModal] = useState(false);
-    const [isToken1Approved, setIsToken1Approved] = useState(false);
-    const [isToken2Approved, setIsToken2Approved] = useState(false);
+    const [isToken1Approved, setIsToken1Approved] = useState(true);
+    const [isToken2Approved, setIsToken2Approved] = useState(true);
     const [isPairAvailable, setIsPairAvailable] = useState(false);
     const [isFetchingPrice, setIsFetchingPrice] = useState(false);
     const [button1, setButton1] = useState("");
@@ -116,12 +116,7 @@ const Index = () => {
     const setInputVal = (name,value) => {
         setFormData(oldValues => ({...oldValues, [name]: value}));
         submitButton()
-        // calculateRate(name,value).then()
     };
-
-    useEffect(() => {
-        calculateRate().then()
-    }, [formData.from,token1,token2]);
 
     useEffect(() => {
         contractInitialize().then()
@@ -267,53 +262,76 @@ const Index = () => {
         setButton1(button)
     }
 
-    const calculateRate = useCallback(async () => {
+    const intervalRef = useRef(null);
+
+    useEffect(() => {
+        if(!formData?.from || formData?.from === 0) setFormData(oldValues => ({...oldValues, "to": ''}));
+
         if (token2.length > 0 && formData.from.length > 0) {
-            setIsFetchingPrice(true);
-            setIsPairAvailable(false);
-            const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
-            await contractInitialize().then()
-            let to;
-            const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
-            const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
+            intervalRef.current = setTimeout(async () => {
+                setIsFetchingPrice(true);
+                setIsPairAvailable(false);
+                const parseValue = roundDownAndParse(formData.from, crypto1.decimal);
+                await contractInitialize().then()
+                let to;
+                const stableRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, true]]);
+                const volatileRate = await contract.connect(signer).getAmountsOut(parseValue, [[token1, token2, false]]);
 
-            let amountOut;
-            let tinyAmountOut;
-            const tinyPriceDivisor = 1000;
-            const tinyStableRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, true]]);
-            const tinyVolatileRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, false]]);
+                let amountOut;
+                let tinyAmountOut;
+                const tinyPriceDivisor = 1000;
+                const tinyStableRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, true]]);
+                const tinyVolatileRate = await contract.connect(signer).getAmountsOut(parseValue.div(tinyPriceDivisor), [[token1, token2, false]]);
 
-            if (stableRate && volatileRate) {
-                if (stableRate[1].gt(volatileRate[1])) {
-                    to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
-                    amountOut = stableRate[1];
-                    tinyAmountOut = tinyStableRate[1];
-                    setRoutes([[token1, token2, true]])
-                } else {
-                    to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
-                    amountOut = volatileRate[1];
-                    tinyAmountOut = tinyVolatileRate[1];
-                    setRoutes([[token1, token2, false]])
+                if (stableRate && volatileRate) {
+                    if (stableRate[1].gt(volatileRate[1])) {
+                        to = roundDownForSwap(stableRate[1].toString(), crypto2.decimal);
+                        amountOut = stableRate[1];
+                        tinyAmountOut = tinyStableRate[1];
+                        setRoutes([[token1, token2, true]])
+                    } else {
+                        to = roundDownForSwap(volatileRate[1].toString(), crypto2.decimal);
+                        amountOut = volatileRate[1];
+                        tinyAmountOut = tinyVolatileRate[1];
+                        setRoutes([[token1, token2, false]])
+                    }
+                    setFormData(oldValues => ({...oldValues, ["to"]: to}));
+
+                    const {priceImpactPercent, severity} = getEstimatedPriceImpact(parseValue, parseValue.div(tinyPriceDivisor), amountOut, tinyAmountOut, crypto1.decimal, crypto2.decimal)
+
+                    setPriceImpact({
+                        priceImpactPercent,
+                        severity
+                    });
+
+                    if (to == 0 && formData.from > 0) {
+
+                        setIsPairAvailable(true);
+                    } else {
+                        setIsPairAvailable(false);
+                    }
+                    setIsFetchingPrice(false);
                 }
-                setFormData(oldValues => ({...oldValues, ["to"]: to}));
-
-                const {priceImpactPercent, severity} = getEstimatedPriceImpact(parseValue, parseValue.div(tinyPriceDivisor), amountOut, tinyAmountOut, crypto1.decimal, crypto2.decimal)
-
-                setPriceImpact({
-                    priceImpactPercent,
-                    severity
-                });
-
-                if (to == 0 && formData.from > 0) {
-
-                    setIsPairAvailable(true);
-                } else {
-                    setIsPairAvailable(false);
-                }
-                setIsFetchingPrice(false);
-            }
+            }, 1000);
+        } else  {
+            clearTimeout(intervalRef.current);
         }
+
+        return () => clearTimeout(intervalRef.current);
     }, [contract, crypto1?.decimal, crypto1?.name, crypto2?.decimal, crypto2?.name, formData?.from, signer, token1, token2])
+
+    // //@todo this code compliments the code above, needs to be refactored too
+    useEffect(() => {
+        if(isFetchingPrice) return
+
+        if(!formData?.from || formData?.from === 0) {
+            setFormData(oldValues => ({...oldValues, "to": ''}));
+            setPriceImpact(previousState => ({...previousState,
+                priceImpactPercent: 0,
+                severity: 1
+            }));
+        }
+    }, [formData?.from, isFetchingPrice])
 
     const swapIn = async () => {
         const slippage = localStorage.getItem('forteSlippage');
@@ -494,9 +512,9 @@ const Index = () => {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="text-end">
+                                            <div className="text-end" style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingLeft: '0.25rem', fontSize: '14px', marginTop: '0.5rem'}}>
                                                 <span className="text-balance">
-                                                    Balance: {token1Balance.parsedForView + ' ' + crypto1.name}
+                                                    {token1Balance.parsedForView + ' ' + crypto1.name}
                                                 </span>
                                                 <button
                                                     className="btn btn-outline-light btn-sm ms-2 fw-normal button-max"
@@ -541,18 +559,18 @@ const Index = () => {
                                                 </div>
                                             </div>
                                             {
-                                                crypto2 ?
-                                                    <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.75rem', fontSize: '14px'}}>
-                                                        <span>
+                                                crypto2  ?
+                                                    <div className="text-end" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.25rem', fontSize: '14px'}}>
+                                                        {formData?.to && <span>
                                                             <span>price impact: </span>
                                                             <span
                                                                 style={{color: `${priceImpact.severity === 2 ? '#ebbe67' : priceImpact.severity === 3 ? 'rgb(253, 118, 107)' : '#AAAAAA'}`}}
                                                             >
                                                                 ~{priceImpact.priceImpactPercent || '0'}%
                                                             </span>
-                                                        </span>
-                                                        <span className="text-balance" style={{marginLeft: 'auto'}}>
-                                                            Balance: {token2Balance.parsedForView + ' ' + crypto2.name}
+                                                        </span>}
+                                                        <span className="text-balance" style={{marginLeft: 'auto', marginTop: '0.5rem'}}>
+                                                            {token2Balance.parsedForView + ' ' + crypto2.name}
                                                         </span>
                                                     </div> : ""
                                             }
