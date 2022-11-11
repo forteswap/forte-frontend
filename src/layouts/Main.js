@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from "../components/Navigation";
+import Header from "../components/Header";
 import { CookiesProvider } from 'react-cookie';
 import GlobalModalProvider from "../components/modal/GlobalModal";
 import Footer from "../components/Footer";
@@ -10,9 +11,9 @@ const Main = ({children}) => {
         <React.Fragment>
             <CookiesProvider>
                 <GlobalModalProvider>
-                    <main className="mb-5">
+                    <main className="w-full h-full">
                         <Notice/>
-                        <Navigation/>
+                        <Header/>
                         {children}
                         <Footer/>
                     </main>

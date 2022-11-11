@@ -1,4 +1,3 @@
-import "./App.scss";
 import React from 'react'
 import {Route, Routes} from 'react-router-dom'
 import Main from "./layouts/Main";
@@ -12,11 +11,12 @@ const App = () => {
     return (
         <Main>
             <Routes>
-                <Route exact path="/pool" element={<Pools/>}/>
+                <Route exact path={"/pool"} element={<Pools/>}/>
                 <Route exact path={"/pool/create"} element={<CreatePool/>}/>
                 <Route exact path={"/pool/add-liquidity/:slug"} element={<AddLiquidity/>}/>
                 <Route exact path={"/pool/remove-liquidity/:slug"} element={<RemoveLiquidity/>}/>
                 <Route exact path={"/"} element={<Swap/>}/>
+                <Route exact path={"/swap"} element={<Swap/>}/>
             </Routes>
         </Main>
     )

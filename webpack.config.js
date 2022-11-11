@@ -20,7 +20,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(scss|css)$/,
+                test: /\.css?$/,
                 include: path.resolve(__dirname, 'src'),
                 use: [
                     {
@@ -28,14 +28,10 @@ module.exports = {
                     },
                     {
                         loader: 'css-loader',
-                    }, {
-                        loader: 'resolve-url-loader',
-                    }, {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: true,
-                        }
-                    }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                    },
                 ],
             },
             {

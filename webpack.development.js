@@ -15,7 +15,8 @@ module.exports = merge(config, {
         historyApiFallback: true,
         static: {
             directory: path.resolve(__dirname, './build')
-        }
+        },
+        hot: true,
     },
     output: {
         filename: '[name].js',
