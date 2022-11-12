@@ -141,7 +141,7 @@ function Index(props) {
     }
 
     return (
-        <Container className="mt-md-5 pool">
+        <Container className="pool">
             <Row>
                 <Col>
                     <Card>
