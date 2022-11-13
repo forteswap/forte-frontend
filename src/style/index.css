@@ -7,3 +7,46 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer base {
+    /*@todo refactor with global state*/
+    [data-chain="0x1"] {
+        /*sky-500*/
+        --color-fill: 199deg 89% 48%;
+        /*neutral-800*/
+        --color-base: 0deg 0% 15%;
+
+        /*sky-700*/
+        --color-secondary: 201deg 96% 32%;
+
+        /*blue-600*/
+        --color-primary-background: 221deg 83% 53%;
+        /*blue-500*/
+        --color-primary-hover: 217deg 91% 60%;
+
+        /*blue-200*/
+        --color-secondary-background: 213deg 97% 87%;
+        /*blue-100*/
+        --color-secondary-hover: 214deg 95% 93%;
+    }
+    /*@todo refactor with global state*/
+    [data-chain="0x1e14"] {
+        /*teal-500*/
+        --color-fill: 173deg 80% 40%;
+        /*neutral-800*/
+        --color-base: 0deg 0% 15%;
+
+        /*teal-700*/
+        --color-secondary: 175deg 77% 26%;
+
+        /*teal-700*/
+        --color-primary-background: 175deg 77% 26%;
+        /*teal-600*/
+        --color-primary-hover: 175deg 84% 32%;
+
+        /*teal-200*/
+        --color-secondary-background: 168deg 84% 78%;
+        /*teal-100*/
+        --color-secondary-hover: 167deg 85% 89%;
+    }
+}

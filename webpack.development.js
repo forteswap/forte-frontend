@@ -6,6 +6,7 @@ module.exports = merge(config, {
     mode: "development",
     devtool: 'eval-cheap-module-source-map',
     devServer: {
+        hot: true,
         client: {
             overlay: {
                 warnings: false,
