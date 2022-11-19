@@ -1,11 +1,11 @@
 import React, {useCallback} from 'react';
 import { useCookies } from 'react-cookie';
+import { SLINGSHOT_RPC_URL } from '../../global';
 
 const Notice = () => {
     let provider = window.ethereum;
     const [cookie, setCookie] = useCookies(['hasUserOptedOut']);
 
-    const SLINGSHOT_RPC_URL = 'https://canto.slingshot.finance/';
     const {hasUserOptedOut} = cookie;
 
     const handleClose = useCallback(() => {
