@@ -3,6 +3,7 @@ import {displayErrorMessage, getPoolData} from "../helper";
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import {useLocation} from "react-router";
+import { SLINGSHOT_RPC_URL } from '../global';
 const themes = {
     dark: "",
     light: "white-layout",
@@ -51,7 +52,7 @@ const Navigation = () => {
                         method: 'wallet_addEthereumChain',
                         params: [{
                             chainId: '0x1e14',
-                            rpcUrls: ['https://canto.evm.chandrastation.com'],
+                            rpcUrls: [SLINGSHOT_RPC_URL],
                             chainName: 'CANTO',
                             nativeCurrency: {
                                 name: 'CANTO',
